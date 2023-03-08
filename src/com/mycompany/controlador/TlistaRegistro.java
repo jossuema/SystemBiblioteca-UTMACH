@@ -5,12 +5,17 @@
  */
 package com.mycompany.controlador;
 
+import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Registro;
 import com.mycompany.entidades.Usuario;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -129,66 +134,45 @@ public class TlistaRegistro {
         return ListaE;
     }
     
-    public static final String SEPARADOR = ";";
-    public static final String QUOTE = "\"";
-    //nombre del archivo csv
-    public static String path = Global.getPath() + "data\\dataRegistro.csv";
-
     public static void leer() throws IOException {
-        BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(path));
-            System.out.println("Datos del archivo: ");
-            String line = br.readLine();
-            System.out.println(line);
-            lista.clear(); //limpiar lista de objetos del arreglo
-            line = br.readLine();
-            while (line != null) {
-                String[] row = line.split(SEPARADOR);
-                removeTrailingQuotes(row);
-                Registro ob = new Registro( TListaUsuario.getUsuario(TListaUsuario.Buscar(row[0]))
-                        , cFecha.crearFecha(row[1]), Boolean.valueOf(row[2]));
-                Agregar(ob);//agregar a la lista	           
-                System.out.println(Arrays.toString(row));
-                line = br.readLine();
+            Conexion Conex = new Conexion();
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("Select * from registro");
+            while(resultado.next()){
+                int pos = TListaUsuario.Buscar(resultado.getString(1));
+                if(pos!=-1){
+                    Registro lb = new Registro(TListaUsuario.getUsuario(pos), cFecha.crearFecha(resultado.getString(2)), Boolean.valueOf(resultado.getString(3)));
+                    lista.add(lb);
+                }
             }
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         } finally {
-            if (null != br) {
-                br.close();
-            }
+            Conexion.closeConnexion();
         }
-    }
-
-    //eliminar comillas
-    private static String[] removeTrailingQuotes(String[] fields) {
-        String result[] = new String[fields.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = fields[i].replaceAll("^" + QUOTE, "").replaceAll(QUOTE + "$", "");
-        }
-        return result;
     }
 
     public static void guardar() throws IOException {
-        FileWriter file;
         try {
-            file = new FileWriter(path);
-            final String NEXT_LINE = "\n";
-            file.append("Cedula").append(SEPARADOR);
-            file.append("Fecha").append(SEPARADOR);
-            file.append("LibroPrestado").append(NEXT_LINE);
-
+            Conexion Conex = new Conexion();
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            st.executeUpdate("DELETE FROM registro");
             for (int i = 0; i < lista.size(); i++) {
-                Registro ob = (Registro) lista.get(i);
-                file.append(ob.getPersona().getCedula()).append(SEPARADOR);
-                file.append(cFecha.ImprimirFecha(ob.getFecha())).append(SEPARADOR);
-                file.append(String.valueOf(ob.getLibroPrestado())).append(NEXT_LINE);
-            }
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
+                Registro e = lista.get(i);
+                String comando = "INSERT INTO registro VALUES ('"
+                    +e.getPersona().getCedula()+"','"
+                            +cFecha.ImprimirFecha(e.getFecha())+"','"
+                                    +e.getLibroPrestado()+"')";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+            }   
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conexion.closeConnexion();
         }
     }
     

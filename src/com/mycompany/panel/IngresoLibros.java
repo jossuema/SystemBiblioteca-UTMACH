@@ -427,7 +427,7 @@ public class IngresoLibros extends javax.swing.JPanel {
         
         if(TListaLibros.Buscar(txtID.getText())==-1){
             if(funcion.equals("Ingreso")){
-                JOptionPane.showMessageDialog(null, "Ya existe un libro con el ID: "+txtID.getText());
+                msj += "Ya existe un libro con el ID: "+txtID.getText();
                 ok = false;
             }
         }

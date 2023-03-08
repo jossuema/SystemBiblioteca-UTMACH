@@ -5,11 +5,16 @@
  */
 package com.mycompany.controlador;
 
+import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Usuario;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.table.DefaultTableModel;
@@ -105,75 +110,54 @@ public class TListaUsuario {
         return TablaCuatroColumnas(listaE);
     }
     
-    public static final String SEPARADOR = ";";
-    public static final String QUOTE = "\"";
-    //nombre del archivo csv
-    public static String path = Global.getPath() + "data\\dataUsuario.csv";
-
     public static void leer() throws IOException {
-        BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(path));
-            System.out.println("Datos del archivo: ");
-            String line = br.readLine();
-            System.out.println(line);
-            lista.clear(); //limpiar lista de objetos del arreglo
-            line = br.readLine();
-            while (line != null) {
-                String[] row = line.split(SEPARADOR);
-                removeTrailingQuotes(row);
-                Usuario ob = new Usuario(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]);
-                Agregar(ob);//agregar a la lista	           
-                System.out.println(Arrays.toString(row));
-                line = br.readLine();
+            Conexion Conex = new Conexion();
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("Select * from usuarios");
+            while(resultado.next()){
+                Usuario lb = new Usuario(resultado.getString(1),
+                        resultado.getString(2),
+                        resultado.getString(3),
+                        resultado.getString(4),
+                        resultado.getString(5),
+                        resultado.getString(6),
+                        resultado.getString(7),
+                resultado.getString(8));
+                lista.add(lb);
             }
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         } finally {
-            if (null != br) {
-                br.close();
-            }
+            Conexion.closeConnexion();
         }
-    }
-
-    //eliminar comillas
-    private static String[] removeTrailingQuotes(String[] fields) {
-        String result[] = new String[fields.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = fields[i].replaceAll("^" + QUOTE, "").replaceAll(QUOTE + "$", "");
-        }
-        return result;
     }
 
     public static void guardar() throws IOException {
-        FileWriter file;
         try {
-            file = new FileWriter(path);
-            final String NEXT_LINE = "\n";
-            file.append("Cedula").append(SEPARADOR);
-            file.append("Nombre").append(SEPARADOR);
-            file.append("ApellidoP").append(SEPARADOR);
-            file.append("ApellidoM").append(SEPARADOR);
-            file.append("Domicilio").append(SEPARADOR);
-            file.append("Telefono").append(SEPARADOR);
-            file.append("Carrera").append(SEPARADOR);
-            file.append("Facultad").append(NEXT_LINE);
-
+            Conexion Conex = new Conexion();
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            st.executeUpdate("DELETE FROM usuarios");
             for (int i = 0; i < lista.size(); i++) {
-                Usuario ob = (Usuario) lista.get(i);
-                file.append(ob.getCedula()).append(SEPARADOR);
-                file.append(ob.getNombre()).append(SEPARADOR);
-                file.append(ob.getApellidoP()).append(SEPARADOR);
-                file.append(ob.getApellidoM()).append(SEPARADOR);
-                file.append(ob.getDomicilio()).append(SEPARADOR);
-                file.append(ob.getTelefono()).append(SEPARADOR);
-                file.append(ob.getCarrera()).append(SEPARADOR);
-                file.append(ob.getFacultad()).append(NEXT_LINE);
-            }
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
+                Usuario e = lista.get(i);
+                String comando = "INSERT INTO usuarios VALUES ('"
+                    +e.getCedula()+"','"
+                            +e.getNombre()+"','"
+                                    +e.getApellidoP()+"','"
+                                            +e.getApellidoM()+"','"
+                                                    +e.getDomicilio()+"','"
+                                                            +e.getTelefono()+"','"
+                                                                    +e.getCarrera()+"','"
+                                                                            +e.getFacultad()+"')";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+            }   
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conexion.closeConnexion();
         }
     }
 }

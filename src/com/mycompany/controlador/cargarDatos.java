@@ -67,13 +67,15 @@ public class cargarDatos {
         try{
             TListaLibros.leer();
         }catch(Exception ex){
-            
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
         }
         
         try{
             TListaUsuario.leer();
         }catch(Exception ex){
-            
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
         }
         
         try{
@@ -86,8 +88,10 @@ public class cargarDatos {
         try{
             TlistaRegistro.leer();
         }catch(Exception ex){
-            
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
         }
+        
         
     }
 }

@@ -5,11 +5,16 @@
  */
 package com.mycompany.controlador;
 
+import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Reporte;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.table.DefaultTableModel;
@@ -113,80 +118,47 @@ public class TListaReporte {
         return tabla;
     }
     
-    public static final String SEPARADOR = ";";
-    public static final String QUOTE = "\"";
-    //nombre del archivo csv
-    public static String path = Global.getPath() + "data\\dataReporte.csv";
-
     public static void leer() throws IOException {
-        BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(path));
-            System.out.println("Datos del archivo: ");
-            String line = br.readLine();
-            System.out.println(line);
-            lista.clear(); //limpiar lista de objetos del arreglo
-            line = br.readLine();
-            while (line != null) {
-                String[] row = line.split(SEPARADOR);
-                removeTrailingQuotes(row);
-                Reporte ob = new Reporte(row[0], row[1], cFecha.crearFecha(row[2]), 
-                        cFecha.crearFecha(row[3]), Boolean.valueOf(row[4]), Integer.valueOf(row[5]), "");
-                try{
-                    ob.setNota(row[6]);
-                }catch(Exception ex){
-                }
-                
-                System.out.println("Leyendo reporte");
-                Agregar(ob);//agregar a la lista	           
-                System.out.println(Arrays.toString(row));
-                line = br.readLine();
+            Conexion Conex = new Conexion();
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("Select * from reporte");
+            while(resultado.next()){
+                Reporte lb = new Reporte(resultado.getString(1), resultado.getString(2), cFecha.crearFecha(resultado.getString(3)),
+                        cFecha.crearFecha(resultado.getString(4)), Boolean.valueOf(resultado.getString(5)), resultado.getInt(6), resultado.getString(7));
+                lista.add(lb);
             }
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         } finally {
-            if (null != br) {
-                br.close();
-            }
+            Conexion.closeConnexion();
         }
-    }
-
-    //eliminar comillas
-    private static String[] removeTrailingQuotes(String[] fields) {
-        String result[] = new String[fields.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = fields[i].replaceAll("^" + QUOTE, "").replaceAll(QUOTE + "$", "");
-        }
-        return result;
     }
 
     public static void guardar() throws IOException {
-        FileWriter file;
         try {
-            file = new FileWriter(path);
-            final String NEXT_LINE = "\n";
-            file.append("Cedula").append(SEPARADOR);
-            file.append("IDLibro").append(SEPARADOR);
-            file.append("FechaSalida").append(SEPARADOR);
-            file.append("FechaEntrega").append(SEPARADOR);
-            file.append("Devuelto").append(SEPARADOR);
-            file.append("Retraso").append(SEPARADOR);
-            file.append("Nota").append(NEXT_LINE);
-
+            Conexion Conex = new Conexion();
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            st.executeUpdate("DELETE FROM reporte");
             for (int i = 0; i < lista.size(); i++) {
-                Reporte ob = (Reporte) lista.get(i);
-                file.append(ob.getCedula()).append(SEPARADOR);
-                file.append(ob.getIDLibro()).append(SEPARADOR);
-                file.append(cFecha.ImprimirFecha(ob.getFechaSalida())).append(SEPARADOR);
-                file.append(cFecha.ImprimirFecha(ob.getFechaEntrega())).append(SEPARADOR);
-                file.append(String.valueOf(ob.getDevuelto())).append(SEPARADOR);
-                file.append(String.valueOf(ob.getRetraso())).append(SEPARADOR);
-                file.append(String.valueOf(ob.getNota())).append(NEXT_LINE);
-            }
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
+                Reporte e = lista.get(i);
+                String comando = "INSERT INTO reporte VALUES ('"
+                    +e.getCedula()+"','"
+                            +e.getIDLibro()+"','"
+                                    +cFecha.ImprimirFecha(e.getFechaSalida())+"','"
+                                            +cFecha.ImprimirFecha(e.getFechaEntrega())+"','"
+                                                    +String.valueOf(e.getDevuelto())+"',"
+                                                            +e.getRetraso()+",'"
+                                                                    +e.getNota()+"')";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+            }   
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conexion.closeConnexion();
         }
     }
     
