@@ -135,11 +135,11 @@ public class TlistaRegistro {
     }
     
     public static void leer() throws IOException {
-        try {
-            Conexion Conex = new Conexion();
+        Conexion Conex = new Conexion();
+        try {           
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("Select * from registro");
+            ResultSet resultado = st.executeQuery("Select * from registros");
             while(resultado.next()){
                 int pos = TListaUsuario.Buscar(resultado.getString(1));
                 if(pos!=-1){
@@ -150,19 +150,19 @@ public class TlistaRegistro {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conexion.closeConnexion();
+            Conex.closeConexion();
         }
     }
 
     public static void guardar() throws IOException {
+        Conexion Conex = new Conexion();
         try {
-            Conexion Conex = new Conexion();
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM registro");
+            st.executeUpdate("DELETE FROM registros");
             for (int i = 0; i < lista.size(); i++) {
                 Registro e = lista.get(i);
-                String comando = "INSERT INTO registro VALUES ('"
+                String comando = "INSERT INTO registros VALUES ('"
                     +e.getPersona().getCedula()+"','"
                             +cFecha.ImprimirFecha(e.getFecha())+"','"
                                     +e.getLibroPrestado()+"')";
@@ -172,7 +172,7 @@ public class TlistaRegistro {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conexion.closeConnexion();
+            Conex.closeConexion();
         }
     }
     

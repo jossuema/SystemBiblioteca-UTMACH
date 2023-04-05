@@ -7,16 +7,12 @@ package com.mycompany.controlador;
 
 import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Libro;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -24,35 +20,97 @@ import javax.swing.table.DefaultTableModel;
  * @author negri
  */
 public class TListaLibros {
-    public static ArrayList<Libro> lista = new ArrayList<Libro>();
     
-    public static void Eliminar(int i){
-        lista.remove(i);
+    public static void Eliminar(String id){
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            st.executeUpdate("DELETE FROM libros WHERE id='"+id+"';");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
     }
     
     public static void Agregar(Libro e){
-        lista.add(e);
-    }
-    
-    public static void Editar(Libro e, int i){
-        lista.set(i, e);
-    }
-    
-    public static Libro getLibro(int i){
-        return lista.get(i);
-    }
-    
-    public static int Buscar(String id){
-        for (int i = 0; i < lista.size(); i++) {
-            Libro get = lista.get(i);
-            if(String.valueOf(get.getID()).equals(id)){
-                return i;
-            }
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            String comando = "INSERT INTO libros VALUES ('"
+                +e.getID()+"','"
+                    +e.getTitulo()+"','"
+                            +cFecha.ImprimirFecha(e.getFecha())+"','"
+                                    +e.getAutor()+"','"
+                                            +e.getCategoria()+"','"
+                                                    +e.getEdicion()+"','"
+                                                            +e.getIdioma()+"',"
+                                                                    +e.getPaginas()+",'"
+                                                                            +e.getDescripcion()+"',"
+                                                                                    +e.getStock()+",'"
+                                                                                            +String.valueOf(e.getDisponible())+"')";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+        } catch (SQLException x) {
+            System.out.println(x.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        if(0==lista.size()){
-            return -2;
+    }
+    
+    public static void Editar(Libro e, String id){
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            String comando = "UPDATE libros SET "
+                +"ID='"+e.getID()+"',"
+                    +"TITULO='"+e.getTitulo()+"',"
+                            +"FECHA='"+cFecha.ImprimirFecha(e.getFecha())+"',"
+                                    +"AUTOR='"+e.getAutor()+"',"
+                                            +"CATEGORIA='"+e.getCategoria()+"',"
+                                                    +"EDICION='"+e.getEdicion()+"',"
+                                                            +"IDIOMA='"+e.getIdioma()+"',"
+                                                                    +"PAGINAS="+e.getPaginas()+","
+                                                                            +"DESCRIPCION='"+e.getDescripcion()+"',"
+                                                                                    +"STOCK="+e.getStock()+","
+                                                                                            +"DISPONIBLE="+String.valueOf(e.getDisponible())
+                    +"WHERE ID='"+id+"';";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+        } catch (SQLException x) {
+            System.out.println(x.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return -1;
+    }
+    
+    public static Libro getLibro(String id){        
+        Conexion Conex = new Conexion();
+        Libro lb = null;
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE ID='"+id+"';");
+            lb = new Libro(resultado.getString(1),
+                    resultado.getString(2),
+                    cFecha.crearFecha(resultado.getString(3)),
+                    resultado.getString(4),
+                    resultado.getString(5),
+                    resultado.getString(6),
+                    resultado.getString(7),
+                    resultado.getInt(8),
+                    resultado.getString(9),
+                    resultado.getInt(10),
+                    Boolean.valueOf(resultado.getString(11)));
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+        return lb;
     }
     
     public static DefaultTableModel TablaPanelLibros(ArrayList<Libro> ListaE){
@@ -90,13 +148,22 @@ public class TListaLibros {
     }
     
     public static DefaultTableModel TablaBusquedaID(String ced, String clave){
-        ArrayList<Libro> listaE = new ArrayList<Libro>();
-        for (int i = 0; i < lista.size(); i++) {
-            Libro e = lista.get(i);
-            if(String.valueOf(e.getID()).toLowerCase().startsWith(ced)){
-                listaE.add(e);
+        ArrayList<Libro> listaE = new ArrayList<>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM libros WHERE ID LIKE '"+ced+"%';");
+            while(resultado.next()){
+                listaE.add(getLibro(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
+        
         if(clave.equals("Completa")){
             return TablaPanelLibros(listaE);
         }
@@ -104,74 +171,27 @@ public class TListaLibros {
     }
     
     public static DefaultTableModel TablaBusquedaVarios(String ced, String clave){
-        ArrayList<Libro> listaE = new ArrayList<Libro>();
-        for (int i = 0; i < lista.size(); i++) {
-            Libro e = lista.get(i);
-            if(e.getTitulo().toLowerCase().startsWith(ced)){
-                listaE.add(e);
+        ArrayList<Libro> listaE = new ArrayList<>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT TITULO FROM libros WHERE ID LIKE '%"+ced+"%';");
+            while(resultado.next()){
+                listaE.add(getLibro(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
+        
         if(clave.equals("Completa")){
             return TablaPanelLibros(listaE);
         }
         return TablaCuatroColumnas(listaE);
     }
-
-    public static void leer() throws IOException {
-        try {
-            Conexion Conex = new Conexion();
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("Select * from libros");
-            while(resultado.next()){
-                Libro lb = new Libro(resultado.getString(1),
-                        resultado.getString(2),
-                        cFecha.crearFecha(resultado.getString(3)),
-                        resultado.getString(4),
-                        resultado.getString(5),
-                        resultado.getString(6),
-                        resultado.getString(7),
-                        resultado.getInt(8),
-                        resultado.getString(9),
-                        resultado.getInt(10),
-                        Boolean.valueOf(resultado.getString(11)));
-                lista.add(lb);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            Conexion.closeConnexion();
-        }
-    }
-
-    public static void guardar() throws IOException {
-        try {
-            Conexion Conex = new Conexion();
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM libros");
-            for (int i = 0; i < lista.size(); i++) {
-                Libro e = lista.get(i);
-                String comando = "INSERT INTO libros VALUES ('"
-                    +e.getID()+"','"
-                            +e.getTitulo()+"','"
-                                    +cFecha.ImprimirFecha(e.getFecha())+"','"
-                                            +e.getAutor()+"','"
-                                                    +e.getCategoria()+"','"
-                                                            +e.getEdicion()+"','"
-                                                                    +e.getIdioma()+"',"
-                                                                            +e.getPaginas()+",'"
-                                                                                    +e.getDescripcion()+"',"
-                                                                                            +e.getStock()+",'"
-                                                                                                    +String.valueOf(e.getDisponible())+"')";
-                System.out.println(comando);
-                st.executeUpdate(comando);
-            }   
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            Conexion.closeConnexion();
-        }
-    }
+    
     
 }

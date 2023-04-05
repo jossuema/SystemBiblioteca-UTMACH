@@ -22,11 +22,11 @@ public class Libros extends javax.swing.JPanel {
     public Libros() {
         initComponents();
         panelFondo.add(new IngresoLibros("Ingreso"), "Ingreso");
-        tabla.setModel(TListaLibros.TablaPanelLibros(TListaLibros.lista));
+        Listar();
     }
     
     public static void Listar(){
-        tabla.setModel(TListaLibros.TablaPanelLibros(TListaLibros.lista));
+        tabla.setModel(TListaLibros.TablaBusquedaID("", "Completa"));
     }
 
     /**
@@ -170,7 +170,7 @@ public class Libros extends javax.swing.JPanel {
 
     private void txtdatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdatoKeyReleased
         if(txtdato.getText().equals("")){
-            tabla.setModel(TListaLibros.TablaPanelLibros(TListaLibros.lista));
+            Listar();
         }
     }//GEN-LAST:event_txtdatoKeyReleased
 
@@ -186,7 +186,7 @@ public class Libros extends javax.swing.JPanel {
             panelFondo.repaint();
             
             String ced = tabla.getValueAt(tabla.getSelectedRow(), 1).toString();
-            IL.setDatos(TListaLibros.getLibro(TListaLibros.Buscar(ced)));
+            IL.setDatos(TListaLibros.getLibro(ced));
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el libro a editar!!");
         }
@@ -199,11 +199,12 @@ public class Libros extends javax.swing.JPanel {
                     JOptionPane.YES_NO_OPTION);
             if(opc == JOptionPane.YES_OPTION){
                 String ced = tabla.getValueAt(tabla.getSelectedRow(), 1).toString();
-                TListaLibros.Eliminar(TListaLibros.Buscar(ced));
-                tabla.setModel(TListaLibros.TablaPanelLibros(TListaLibros.lista));
                 try{
-                    TListaLibros.guardar();
+                    TListaLibros.Eliminar(ced);
                 }catch(Exception ex){}}
+            
+                Listar();
+                
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el libro a eliminar!");
         }

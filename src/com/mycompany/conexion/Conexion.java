@@ -14,10 +14,10 @@ import java.sql.SQLException;
  * @author negri
  */
 public class Conexion {
-    private static Connection conexion = null;
-    private static String user = "root";
-    private static String psw = "#";
-    private static String url = "jdbc:mysql://localhost:3306/dblibreria";
+    private Connection conexion = null;
+    private final String user = "root";
+    private final String psw = "Root800#";
+    private final String url = "jdbc:mysql://localhost:3306/dblibreria";
     
     public Conexion(){}
     
@@ -34,7 +34,7 @@ public class Conexion {
         return conexion;
     }
     
-    public static void closeConnexion(){
+    public void closeConexion(){
         try {
             conexion.close();
         } catch (SQLException ex) {

@@ -1,12 +1,11 @@
 ID;Titulo;Fecha;Autor;Categoria;Edicion;Idioma;Paginas;Descripcion;Stock;Dsiponible
-1214434656;Fundamentos de POO en JAVA;21/9/2015;Bertha Mazon;Educativo;1era Edicion;Español;166;Libro acerca de POO en JAVA;20;true
-1234567891;Fundamentos TI;21/9/2015;Luis Lojan;Educativo;1era Edicion;Español;200;Libro acerca de TI;20;true
-1231126373;Analisis Matematico;21/9/2015;Maritza Pinta;Educativo;1era Edicion;Español;100;Libro acerca de Analisis Matematico;20;true
-1182378912;Algebra Lineal;21/9/2015;Maritza Pinta;Educativo;1era Edicion;Español;250;Libro acerca de Algebra Lineal;20;true
-1128937198;Redes Electricas;21/9/2015;Johnny Novillo;Educativo;1era Edicion;Español;90;Libro acerca de Redes Electricas;20;true
-1144331656;Fundamentos de Programacion;21/9/2015;Bertha Mazon;Educativo;1era Edicion;Español;50;Libro acerca de Programacion Basica;20;true
-1172378731;Base de Datos;21/9/2015;Jofree Cartuche;Educativo;1era Edicion;Español;139;Libro acerca de Base de Datos;20;true
-1093289482;Matematicas Discretas;21/9/2015;Luis Lojan;Educativo;1era Edicion;Español;221;Libro acerca de Matematicas Discretas;20;true
-1097834862;Herramienta de planificacion de Proyectos;21/9/2015;Oscar Cardenas;Educativo;1era Edicion;Español;70;Libro acerca de HPP;20;true
-1893748239;Comunicacion Academica;21/9/2015;Freddy Jumbo;Educativo;1era Edicion;Español;145;Libro acerca de Comunicacion Academica;20;true
-;;;;;;;;;;
+1214434656;Fundamentos de POO en JAVA;2015-9-21;Bertha Mazon;Educativo;1era Edicion;Español;166;Libro acerca de POO en JAVA;20;1
+1234567891;Fundamentos TI;2015-9-21;Luis Lojan;Educativo;1era Edicion;Español;200;Libro acerca de TI;20;1
+1231126373;Analisis Matematico;2015-9-21;Maritza Pinta;Educativo;1era Edicion;Español;100;Libro acerca de Analisis Matematico;20;1
+1182378912;Algebra Lineal;2015-9-21;Maritza Pinta;Educativo;1era Edicion;Español;250;Libro acerca de Algebra Lineal;20;1
+1128937198;Redes Electricas;2015-9-21;Johnny Novillo;Educativo;1era Edicion;Español;90;Libro acerca de Redes Electricas;20;1
+1144331656;Fundamentos de Programacion;2015-9-21;Bertha Mazon;Educativo;1era Edicion;Español;50;Libro acerca de Programacion Basica;20;1
+1172378731;Base de Datos;2015-9-21;Jofree Cartuche;Educativo;1era Edicion;Español;139;Libro acerca de Base de Datos;20;1
+1093289482;Matematicas Discretas;2015-9-21;Luis Lojan;Educativo;1era Edicion;Español;221;Libro acerca de Matematicas Discretas;20;1
+1097834862;Herramienta de planificacion de Proyectos;2015-9-21;Oscar Cardenas;Educativo;1era Edicion;Español;70;Libro acerca de HPP;20;1
+1893748239;Comunicacion Academica;2015-9-21;Freddy Jumbo;Educativo;1era Edicion;Español;145;Libro acerca de Comunicacion Academica;20;1

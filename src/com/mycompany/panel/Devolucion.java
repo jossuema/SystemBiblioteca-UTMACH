@@ -141,16 +141,11 @@ public class Devolucion extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(jTable1.getSelectedRow()>=0){
-            String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-            String id = jTable1.getValueAt(jTable1.getSelectedRow(), 2).toString();
-            int pos = TListaReporte.Buscar(ced, id);
-            Reporte re = TListaReporte.getReporte(pos);
-            TListaReporte.Editar(re, pos);
+            int id = Integer.valueOf(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
+            Reporte re = TListaReporte.getReporte(id);
             re.Devolver();
-            try{
-                    TListaReporte.guardar();
-                }catch(Exception ex){}
-            
+            TListaReporte.Editar(re);
+                     
             if(re.getRetraso()<1){
                 JOptionPane.showMessageDialog(null, "Libro devuelto correctamente y a tiempo.");
             }else{

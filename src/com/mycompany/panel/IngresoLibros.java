@@ -337,14 +337,11 @@ public class IngresoLibros extends javax.swing.JPanel {
             if(funcion.equals("Ingreso")){
                 TListaLibros.Agregar(e);
             }else{
-                TListaLibros.Editar(e, TListaLibros.Buscar(CedG));
+                TListaLibros.Editar(e, CedG);
                 this.hide();
             }
             Libros.Listar();
             
-            try{
-                TListaLibros.guardar();
-            }catch(Exception ex){}
         }
     }//GEN-LAST:event_jButton1ActionPerformed
     
@@ -425,7 +422,7 @@ public class IngresoLibros extends javax.swing.JPanel {
             ok = false;
         }
         
-        if(TListaLibros.Buscar(txtID.getText())==-1){
+        if(TListaLibros.getLibro(txtID.getText())==null){
             if(funcion.equals("Ingreso")){
                 msj += "Ya existe un libro con el ID: "+txtID.getText();
                 ok = false;
