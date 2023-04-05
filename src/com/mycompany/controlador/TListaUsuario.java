@@ -111,8 +111,8 @@ public class TListaUsuario {
     }
     
     public static void leer() throws IOException {
+        Conexion Conex = new Conexion();
         try {
-            Conexion Conex = new Conexion();
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("Select * from usuarios");
@@ -130,13 +130,13 @@ public class TListaUsuario {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conexion.closeConnexion();
+            Conex.closeConexion();
         }
     }
 
     public static void guardar() throws IOException {
+        Conexion Conex = new Conexion();
         try {
-            Conexion Conex = new Conexion();
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
             st.executeUpdate("DELETE FROM usuarios");
@@ -157,7 +157,7 @@ public class TListaUsuario {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conexion.closeConnexion();
+            Conex.closeConexion();
         }
     }
 }

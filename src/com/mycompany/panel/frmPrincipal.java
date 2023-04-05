@@ -7,7 +7,6 @@ package com.mycompany.panel;
 
 import com.mycompany.controlador.Global;
 import com.mycompany.controlador.cFecha;
-import com.mycompany.controlador.cargarDatos;
 import java.awt.CardLayout;
 import java.io.File;
 import java.util.Date;
@@ -24,7 +23,6 @@ public class frmPrincipal extends javax.swing.JFrame {
      */
     public frmPrincipal() {
         initComponents();
-        cargarDatos.principal();
         
         //String date = "12/11/2022";
         //System.out.println(new Date(2022, 11, 12).toGMTString());

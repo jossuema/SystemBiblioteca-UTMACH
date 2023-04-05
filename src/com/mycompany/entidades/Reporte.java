@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class Reporte {
 
-    public Reporte(String Cedula, String IDLibro, Date fechaSalida, Date fechaEntrega, boolean Devuelto, int Retraso, String Nota) {
+    public Reporte(String Cedula, String IDLibro, Date fechaSalida, Date fechaEntrega, boolean Devuelto, int Retraso, String Nota, int id) {
         this.Cedula = Cedula;
         this.IDLibro = IDLibro;
         this.fechaSalida = fechaSalida;
@@ -24,6 +24,7 @@ public class Reporte {
         this.Devuelto = Devuelto;
         this.Retraso = Retraso;
         this.Nota = Nota;
+        this.ID = id;
     }
     
     private String Cedula;
@@ -32,6 +33,16 @@ public class Reporte {
     private Date fechaEntrega;
     private boolean Devuelto;
     private int Retraso;
+    private int ID;
+    
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+    
     
     public String DiasRetraso(){
         if(!Devuelto){
@@ -50,7 +61,7 @@ public class Reporte {
     public void Devolver(){
         this.Devuelto = true;
         
-        TListaLibros.getLibro(TListaLibros.Buscar(IDLibro)).aumentarStock(1);
+        TListaLibros.getLibro(IDLibro).aumentarStock(1);
         long dias = cFecha.DiasDiferencia(cFecha.FechaActual(), fechaEntrega);
         if(dias>0){
             this.Retraso = (int) dias;

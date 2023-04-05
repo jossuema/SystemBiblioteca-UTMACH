@@ -9,6 +9,7 @@ import com.mycompany.controlador.TListaLibros;
 import com.mycompany.controlador.TListaReporte;
 import com.mycompany.controlador.TListaUsuario;
 import com.mycompany.controlador.Validaciones;
+import com.mycompany.entidades.Libro;
 import com.mycompany.entidades.Reporte;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -25,7 +26,7 @@ public class prestamo extends javax.swing.JPanel {
     public prestamo() {
         initComponents();
         tablaUsuario.setModel(TListaUsuario.TablaCuatroColumnas(TListaUsuario.lista));
-        tablaLibro.setModel(TListaLibros.TablaCuatroColumnas(TListaLibros.lista));
+        tablaLibro.setModel(TListaLibros.TablaBusquedaID("", ""));
     }
 
     /**
@@ -302,7 +303,10 @@ public class prestamo extends javax.swing.JPanel {
         if(re!=null){
             TListaReporte.Agregar(re);
             String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
-            TListaLibros.getLibro(TListaLibros.Buscar(ced)).reducirStock(-1);
+            Libro lb = TListaLibros.getLibro(ced);
+            lb.reducirStock(1);
+            TListaLibros.Editar(lb, ced);
+            
             try{
                 TListaReporte.guardar();
             }catch(Exception ex){}
@@ -331,7 +335,7 @@ public class prestamo extends javax.swing.JPanel {
 
     private void txtDatoLibroKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoLibroKeyReleased
         if(txtDatoLibro.equals("")){
-            tablaLibro.setModel(TListaLibros.TablaCuatroColumnas(TListaLibros.lista));
+            tablaLibro.setModel(TListaLibros.TablaBusquedaID("", ""));
         }
     }//GEN-LAST:event_txtDatoLibroKeyReleased
     
@@ -367,7 +371,7 @@ public class prestamo extends javax.swing.JPanel {
         }
         
         String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
-        if(TListaLibros.getLibro(TListaLibros.Buscar(ced)).getStock()<1){
+        if(TListaLibros.getLibro(ced).getStock()<1){
             msj = "No existen mas libros en stock!!";
             ok = false;
         }
