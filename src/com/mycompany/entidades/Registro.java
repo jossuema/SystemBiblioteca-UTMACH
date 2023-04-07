@@ -12,9 +12,26 @@ import java.util.Date;
  * @author negri
  */
 public class Registro {
+
+    public Registro(Usuario Persona, Date Fecha, boolean LibroPrestado, int ID) {
+        this.Persona = Persona;
+        this.Fecha = Fecha;
+        this.LibroPrestado = LibroPrestado;
+        this.ID = ID;
+    }
     private Usuario Persona;
     private Date Fecha;
     private boolean LibroPrestado;
+    private int ID;
+    
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+    
 
     public Usuario getPersona() {
         return Persona;

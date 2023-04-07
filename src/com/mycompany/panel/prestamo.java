@@ -25,7 +25,7 @@ public class prestamo extends javax.swing.JPanel {
      */
     public prestamo() {
         initComponents();
-        tablaUsuario.setModel(TListaUsuario.TablaCuatroColumnas(TListaUsuario.lista));
+        tablaUsuario.setModel(TListaUsuario.TablaBusquedaVarios("", ""));
         tablaLibro.setModel(TListaLibros.TablaBusquedaID("", ""));
     }
 
@@ -302,14 +302,10 @@ public class prestamo extends javax.swing.JPanel {
         Reporte re = leer();
         if(re!=null){
             TListaReporte.Agregar(re);
-            String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
+            String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 0).toString();
             Libro lb = TListaLibros.getLibro(ced);
             lb.reducirStock(1);
             TListaLibros.Editar(lb, ced);
-            
-            try{
-                TListaReporte.guardar();
-            }catch(Exception ex){}
             
         }
         
@@ -329,7 +325,7 @@ public class prestamo extends javax.swing.JPanel {
 
     private void txtDatoUsuarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoUsuarioKeyReleased
         if(txtDatoUsuario.equals("")){
-            tablaUsuario.setModel(TListaUsuario.TablaCuatroColumnas(TListaUsuario.lista));
+            tablaUsuario.setModel(TListaUsuario.TablaBusquedaVarios("", ""));
         }
     }//GEN-LAST:event_txtDatoUsuarioKeyReleased
 

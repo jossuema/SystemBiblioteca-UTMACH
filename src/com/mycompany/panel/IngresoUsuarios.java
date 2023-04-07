@@ -275,15 +275,10 @@ public class IngresoUsuarios extends javax.swing.JPanel {
             if(funcion.equals("Ingresar")){
                 TListaUsuario.Agregar(e);
             }else{
-                TListaUsuario.Editar(e, TListaUsuario.Buscar(CedG));
+                TListaUsuario.Editar(e, CedG);
                 this.hide();
             }
             panelUsuarios.Listar();
-            try{
-                TListaUsuario.guardar();
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
 
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -333,7 +328,7 @@ public class IngresoUsuarios extends javax.swing.JPanel {
             ok = false;
         }
         
-        if(TListaUsuario.Buscar(txtCedula.getText())!=-1){
+        if(TListaUsuario.getUsuario(txtCedula.getText())!=null){
             if(funcion.equals("Ingresar")){
                 JOptionPane.showMessageDialog(null, "Ya existe un usuario con la cedula: "+txtCedula.getText());
                 ok = false;

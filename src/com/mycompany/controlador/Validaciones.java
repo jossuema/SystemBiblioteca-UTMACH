@@ -147,7 +147,7 @@ public class Validaciones {
     public static boolean esLetras(JTextField txt)
     {
         boolean ok=true;
-        if (!txt.getText().trim().matches("[a-zA-Z������������ ]{1,}"))
+        if (!txt.getText().trim().matches("[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]"))
         {
             txt.setBorder(BorderFactory.createLineBorder(Color.red));
             txt.setBackground(Color.pink);
@@ -159,7 +159,7 @@ public class Validaciones {
     public static boolean esLetras(JTextArea txt)
     {
         boolean ok=true;
-        if (!txt.getText().trim().matches("[a-zA-Z������������ ]{1,}"))
+        if (!txt.getText().trim().matches("[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]"))
         {
             txt.setBorder(BorderFactory.createLineBorder(Color.red));
             txt.setBackground(Color.pink);

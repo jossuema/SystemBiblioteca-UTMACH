@@ -26,7 +26,7 @@ public class TListaLibros {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM libros WHERE id='"+id+"';");
+            st.executeUpdate("DELETE FROM libros WHERE ID='"+id+"';");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -42,15 +42,15 @@ public class TListaLibros {
             String comando = "INSERT INTO libros VALUES ('"
                 +e.getID()+"','"
                     +e.getTitulo()+"','"
-                            +cFecha.ImprimirFecha(e.getFecha())+"','"
+                            +cFecha.FechaSQL(e.getFecha())+"','"
                                     +e.getAutor()+"','"
                                             +e.getCategoria()+"','"
                                                     +e.getEdicion()+"','"
                                                             +e.getIdioma()+"',"
                                                                     +e.getPaginas()+",'"
                                                                             +e.getDescripcion()+"',"
-                                                                                    +e.getStock()+",'"
-                                                                                            +String.valueOf(e.getDisponible())+"')";
+                                                                                    +e.getStock()+","
+                                                                                            +e.getDisponible()+")";
                 System.out.println(comando);
                 st.executeUpdate(comando);
         } catch (SQLException x) {
@@ -76,8 +76,8 @@ public class TListaLibros {
                                                                     +"PAGINAS="+e.getPaginas()+","
                                                                             +"DESCRIPCION='"+e.getDescripcion()+"',"
                                                                                     +"STOCK="+e.getStock()+","
-                                                                                            +"DISPONIBLE="+String.valueOf(e.getDisponible())
-                    +"WHERE ID='"+id+"';";
+                                                                                            +"DISPONIBLE="+e.getDisponible()
+                    +" WHERE ID='"+id+"';";
                 System.out.println(comando);
                 st.executeUpdate(comando);
         } catch (SQLException x) {
@@ -94,7 +94,8 @@ public class TListaLibros {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE ID='"+id+"';");
-            lb = new Libro(resultado.getString(1),
+            if(resultado.next()){
+                lb = new Libro(resultado.getString(1),
                     resultado.getString(2),
                     cFecha.crearFecha(resultado.getString(3)),
                     resultado.getString(4),
@@ -104,7 +105,9 @@ public class TListaLibros {
                     resultado.getInt(8),
                     resultado.getString(9),
                     resultado.getInt(10),
-                    Boolean.valueOf(resultado.getString(11)));
+                    resultado.getBoolean(11));
+            }
+            
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -177,7 +180,8 @@ public class TListaLibros {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT TITULO FROM libros WHERE ID LIKE '%"+ced+"%';");
+            ResultSet resultado = st.executeQuery("SELECT ID FROM libros WHERE TITULO LIKE '%"+ced+"%' OR FECHA LIKE '%"+ced+"%' OR CATEGORIA LIKE '"+ced+"%' "
+                    + "OR EDICION LIKE '"+ced+"%' OR AUTOR LIKE '%"+ced+"%' OR IDIOMA LIKE '"+ced+"%';");
             while(resultado.next()){
                 listaE.add(getLibro(resultado.getString(1)));
             }

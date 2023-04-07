@@ -27,7 +27,7 @@ public class panelRegistro extends javax.swing.JPanel {
     }
     
     public static void Listar(){
-        tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.lista));
+        tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
     }
 
     panelRegistro(Usuario us, Date date, boolean selected) {
@@ -71,6 +71,11 @@ public class panelRegistro extends javax.swing.JPanel {
         title1.setFont(new java.awt.Font("Wide Latin", 3, 36)); // NOI18N
         title1.setText("Registro");
 
+        txtDato.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDatoActionPerformed(evt);
+            }
+        });
         txtDato.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtDatoKeyReleased(evt);
@@ -181,7 +186,7 @@ public class panelRegistro extends javax.swing.JPanel {
                                 .addComponent(title1, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(txtDato, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, 0)
                                 .addComponent(jButton4))))
@@ -216,7 +221,7 @@ public class panelRegistro extends javax.swing.JPanel {
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(101, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
 
         panelFondo.add(jPanel1, "card2");
@@ -244,7 +249,7 @@ public class panelRegistro extends javax.swing.JPanel {
 
     private void txtDatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoKeyReleased
         if(txtDato.getText().equals("")){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.lista));
+            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
         }
     }//GEN-LAST:event_txtDatoKeyReleased
 
@@ -254,13 +259,9 @@ public class panelRegistro extends javax.swing.JPanel {
             int opc = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar este registro?", "Eliminar registro", 
                     JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE);
             if(opc == JOptionPane.YES_OPTION){
-                String ced = tabla.getValueAt(tabla.getSelectedRow(), 1).toString();
-                TlistaRegistro.Eliminar(TlistaRegistro.Buscar(ced));
+                String ced = tabla.getValueAt(tabla.getSelectedRow(), 0).toString();
+                TlistaRegistro.Eliminar(ced);
                 Listar();
-                try{
-                    TlistaRegistro.guardar();
-                }catch(Exception ex){}
-
             }
             
         }else{
@@ -281,10 +282,16 @@ public class panelRegistro extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jDateChooser1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jDateChooser1KeyReleased
-        if(jDateChooser1.getDate()==null){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.lista));
+        if(jDateChooser1.getDate()==null&&txtDato.getText().equals("")){
+            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
         }
     }//GEN-LAST:event_jDateChooser1KeyReleased
+
+    private void txtDatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDatoActionPerformed
+        if(jDateChooser1.getDate()==null&&txtDato.getText().equals("")){
+            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
+        }
+    }//GEN-LAST:event_txtDatoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

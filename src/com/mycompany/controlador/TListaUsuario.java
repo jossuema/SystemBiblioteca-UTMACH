@@ -24,32 +24,89 @@ import javax.swing.table.DefaultTableModel;
  * @author negri
  */
 public class TListaUsuario {
-    public static ArrayList<Usuario> lista = new ArrayList<Usuario>();
-    
-    public static void Eliminar(int i){
-        lista.remove(i);
+    public static void Eliminar(String ced){
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            st.executeUpdate("DELETE FROM usuarios WHERE CEDULA='"+ced+"';");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
     }
     
     public static void Agregar(Usuario e){
-        lista.add(e);
-    }
-    
-    public static void Editar(Usuario e, int i){
-        lista.set(i, e);
-    }
-    
-    public static int Buscar(String ced){
-        for (int i = 0; i < lista.size(); i++) {
-            Usuario get = lista.get(i);
-            if(get.getCedula().equals(ced)){
-                return i;
-            }
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            String comando = "INSERT INTO usuarios VALUES ('"
+                +e.getCedula()+"','"
+                    +e.getNombre()+"','"
+                        +e.getApellidoP()+"','"
+                            +e.getApellidoM()+"','"
+                                    +e.getDomicilio()+"','"
+                                        +e.getTelefono()+"','"
+                                            +e.getCarrera()+"','"
+                                                +e.getFacultad()+"')";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+        } catch (SQLException x) {
+            System.out.println(x.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return -1;
     }
     
-    public static Usuario getUsuario(int i){
-        return lista.get(i);
+    public static void Editar(Usuario e, String ced){
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            String comando = "UPDATE usuarios SET "
+                +"CEDULA='"+e.getCedula()+"',"
+                    +"NOMBRE='"+e.getNombre()+"',"
+                            +"APELLIDOP='"+e.getApellidoP()+"',"
+                                    +"APELLIDOM='"+e.getApellidoM()+"',"
+                                            +"DOMICILIO='"+e.getDomicilio()+"',"
+                                                    +"TELEFONO='"+e.getTelefono()+"',"
+                                                            +"CARRERA='"+e.getCarrera()+"',"
+                                                                    +"FACULTAD= '"+e.getFacultad()
+                    +" WHERE CEDULA='"+ced+"';";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+        } catch (SQLException x) {
+            System.out.println(x.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+    }
+    
+    public static Usuario getUsuario(String ced){        
+        Conexion Conex = new Conexion();
+        Usuario lb = null;
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT * FROM usuarios WHERE CEDULA='"+ced+"';");
+            if(resultado.next()){
+                lb = new Usuario(resultado.getString(1),
+                        resultado.getString(2),
+                        resultado.getString(3),
+                        resultado.getString(4),
+                        resultado.getString(5),
+                        resultado.getString(6),
+                        resultado.getString(7),
+                resultado.getString(8));
+            } 
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+        return lb;
     }
     
     public static DefaultTableModel TablaPanelUsuario(ArrayList<Usuario> ListaE){
@@ -84,12 +141,21 @@ public class TListaUsuario {
     
     public static DefaultTableModel TablaBusquedaCed(String ced, String clave){
         ArrayList<Usuario> listaE = new ArrayList<Usuario>();
-        for (int i = 0; i < lista.size(); i++) {
-            Usuario e = lista.get(i);
-            if(e.getCedula().toLowerCase().startsWith(ced)){
-                listaE.add(e);
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT CEDULA FROM usuarios WHERE CEDULA LIKE '"+ced+"%';");
+            while(resultado.next()){
+                listaE.add(getUsuario(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
+        
         if(clave.equals("Completa")){
             return TablaPanelUsuario(listaE);
         }
@@ -98,19 +164,30 @@ public class TListaUsuario {
     
     public static DefaultTableModel TablaBusquedaVarios(String ced, String clave){
         ArrayList<Usuario> listaE = new ArrayList<Usuario>();
-        for (int i = 0; i < lista.size(); i++) {
-            Usuario e = lista.get(i);
-            if(e.getNombre().toLowerCase().startsWith(ced)||e.getApellidoP().toLowerCase().startsWith(ced)||e.getCarrera().toLowerCase().startsWith(ced)){
-                listaE.add(e);
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT CEDULA FROM usuarios "
+                    + "WHERE CEDULA LIKE '"+ced+"%' OR NOMBRE LIKE '"+ced+"%' OR APELLIDOP LIKE '"+ced+"%' OR APELLIDOM LIKE'"+ced+"%' OR CARRERA LIKE '"+ced+"%' OR FACULTAD LIKE '"+ced+"%';");
+            while(resultado.next()){
+                listaE.add(getUsuario(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            Conex.closeConexion();
         }
+        
         if(clave.equals("Completa")){
             return TablaPanelUsuario(listaE);
         }
         return TablaCuatroColumnas(listaE);
     }
     
-    public static void leer() throws IOException {
+    /*public static void leer() throws IOException {
         Conexion Conex = new Conexion();
         try {
             Connection con = Conex.obtenerConexion();
@@ -159,5 +236,5 @@ public class TListaUsuario {
         } finally {
             Conex.closeConexion();
         }
-    }
+    }*/
 }

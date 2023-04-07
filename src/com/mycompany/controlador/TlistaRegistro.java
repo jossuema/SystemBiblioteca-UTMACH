@@ -25,40 +25,65 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author negri
  */
-public class TlistaRegistro {
-    public static ArrayList<Registro> lista = new ArrayList<Registro>();
-    
-    public static void Eliminar(int i){
-        lista.remove(i);
+public class TlistaRegistro{
+    public static void Eliminar(String id){
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            st.executeUpdate("DELETE FROM registros WHERE ID='"+id+"';");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
     }
     
     public static void Agregar(Registro e){
-        lista.add(e);
-    }
-    
-    public static void Editar(Registro e, int i){
-        lista.set(i, e);
-    }
-    
-    public static int Buscar(String ced){
-        for (int j = 0; j < lista.size(); j++) {
-            Registro get = lista.get(j);
-            if(get.getPersona().getCedula().equals(ced)){
-                return j;
-            }
-            
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            String comando = "INSERT INTO registros (CEDULA, FECHA, LIBRO_PRESTADO) VALUES ('"
+                +e.getPersona().getCedula()+"','"
+                    +cFecha.FechaSQL(e.getFecha())+"',"
+                        +e.getLibroPrestado()+")";
+                System.out.println(comando);
+                st.executeUpdate(comando);
+        } catch (SQLException x) {
+            System.out.println(x.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return -1;
+    }
+    
+    public static Registro getRegistro(String id){        
+        Conexion Conex = new Conexion();
+        Registro lb = null;
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA WHERE A.ID = '"+id+"';");
+            if(resultado.next()){
+                lb = new Registro(new Usuario(resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(4), resultado.getString(5)
+                        , resultado.getString(6), resultado.getString(7), resultado.getString(8)), resultado.getDate(9), resultado.getBoolean(10), resultado.getInt(11));
+            } 
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+        return lb;
     }
     
     public static DefaultTableModel TablaPanelRegistro(ArrayList<Registro> ListaE){
-        String[] columnas = {"No.", "Cedula", "Nombre", "Apellido", "Facultad", "Carrera"
+        String[] columnas = {"ID", "Cedula", "Nombre", "Apellido", "Facultad", "Carrera"
                 , "Fecha", "Libro prestado"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
         
         for (int i = 0; i < ListaE.size(); i++) {
             Registro e = ListaE.get(i);
-            Object[] row = {(i+1), e.getPersona().getCedula(), e.getPersona().getNombre(), e.getPersona().getApellidoP(), 
+            Object[] row = {String.valueOf(e.getID()), e.getPersona().getCedula(), e.getPersona().getNombre(), e.getPersona().getApellidoP(), 
                 e.getPersona().getFacultad(), e.getPersona().getCarrera(), cFecha.ImprimirFecha(e.getFecha()), LibroPrestado(e.getLibroPrestado())};
             tabla.addRow(row);
         }
@@ -74,44 +99,42 @@ public class TlistaRegistro {
     }
     
     public static ArrayList<Registro> TablaBusquedaFecha(Date fecha){
-        ArrayList<Registro> ListaE =  new ArrayList<Registro>();
-        for (int i = 0; i < lista.size(); i++) {
-            Registro e = lista.get(i);
-            if(e.getFecha().getDate()==fecha.getDay()&&e.getFecha().getMonth()==fecha.getMonth()&&e.getFecha().getYear()==fecha.getYear()){
-                ListaE.add(e);
+        ArrayList<Registro> ListaE =  new ArrayList<>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM registros WHERE FECHA = '"+cFecha.FechaSQL(fecha)+"';");
+            System.out.println(cFecha.FechaSQL(fecha));
+            while(resultado.next()) {                
+                ListaE.add(getRegistro(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        if(ListaE.size()<1){
-            for (int i = 0; i < lista.size(); i++) {
-                Registro e = lista.get(i);
-                if(e.getFecha().getMonth()==fecha.getMonth()&&e.getFecha().getYear()==fecha.getYear()){
-                    ListaE.add(e);
-                }
-            }
-        }
-        if(ListaE.size()<1){
-            for (int i = 0; i < lista.size(); i++) {
-                Registro e = lista.get(i);
-                if(e.getFecha().getYear()==fecha.getYear()){
-                    ListaE.add(e);
-                }
-            }    
-        }
+        
         return ListaE;
     }
     
     public static ArrayList<Registro> TablaBusquedaVarios(String clave){
-        ArrayList<Registro> ListaE =  new ArrayList<Registro>();
-        clave = clave.toLowerCase();
-        for (int i = 0; i < lista.size(); i++) {
-            Registro e = lista.get(i);
-            if(e.getPersona().getCedula().toLowerCase().startsWith(clave)
-                    ||e.getPersona().getNombre().toLowerCase().startsWith(clave)
-                    ||e.getPersona().getApellidoP().toLowerCase().startsWith(clave)
-                    ||e.getPersona().getFacultad().toLowerCase().startsWith(clave)
-                    ||e.getPersona().getCarrera().toLowerCase().startsWith(clave)){
-                ListaE.add(e);
+        ArrayList<Registro> ListaE =  new ArrayList<>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA "
+                    + "WHERE CEDULA LIKE '"+clave+"%' OR NOMBRE LIKE '"+clave+"%' OR APELLIDOP LIKE '"+clave+"%' OR APELLIDOM LIKE '"+clave+"%' OR CARRERA LIKE '"+clave+"%' OR FACULTAD LIKE '"+clave+"%';");
+            while(resultado.next()) {                
+                ListaE.add(getRegistro(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
         return ListaE;
     }
@@ -134,7 +157,28 @@ public class TlistaRegistro {
         return ListaE;
     }
     
-    public static void leer() throws IOException {
+    public static ArrayList<Registro> getLISTA(){
+        ArrayList<Registro> ListaE = new ArrayList<>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM registros;");
+            while(resultado.next()){
+                ListaE.add(getRegistro(resultado.getString(1)));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+        
+        return ListaE;
+    }
+    
+    
+    /*public static void leer() throws IOException {
         Conexion Conex = new Conexion();
         try {           
             Connection con = Conex.obtenerConexion();
@@ -174,19 +218,25 @@ public class TlistaRegistro {
         } finally {
             Conex.closeConexion();
         }
-    }
+    }*/
     
     public static ArrayList<Registro> ordenamientoBurbuja(){
-        ArrayList<Registro> al = lista;
-        for (int i = 0; i < al.size() - 1; i++) {
-            for (int j = 0; j < al.size() - i - 1; j++) {
-                if (al.get(j).getFecha().compareTo(al.get(j+1).getFecha()) < 0) {
-                    Registro pe = al.get(j);
-                    al.set(j, al.get(j+1));
-                    al.set(j+1, pe);
-                }
+        ArrayList<Registro> ListaE = new ArrayList<>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM registros ORDER BY FECHA;");
+            while(resultado.next()){
+                ListaE.add(getRegistro(resultado.getString(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return al;
+        
+        return ListaE;
     }
 }

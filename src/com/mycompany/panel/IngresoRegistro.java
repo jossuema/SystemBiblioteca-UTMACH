@@ -24,7 +24,7 @@ public class IngresoRegistro extends javax.swing.JPanel {
      */
     public IngresoRegistro() {
         initComponents();
-        jTable1.setModel(TListaUsuario.TablaCuatroColumnas(TListaUsuario.lista));
+        jTable1.setModel(TListaUsuario.TablaBusquedaCed("", ""));
     }
 
     /**
@@ -189,9 +189,6 @@ public class IngresoRegistro extends javax.swing.JPanel {
         if(le!=null){
             TlistaRegistro.Agregar(le);
             System.out.println("Guardado");
-            try{
-                    TlistaRegistro.guardar();
-                }catch(Exception ex){}
 
         }
         panelRegistro.Listar();
@@ -205,7 +202,7 @@ public class IngresoRegistro extends javax.swing.JPanel {
 
     private void txtDatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoKeyReleased
         if(txtDato.equals("")){
-            jTable1.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.lista));
+            jTable1.setModel(TListaUsuario.TablaBusquedaCed("", ""));
         }
     }//GEN-LAST:event_txtDatoKeyReleased
     
@@ -213,7 +210,7 @@ public class IngresoRegistro extends javax.swing.JPanel {
         Registro rr = null;
         if(Validacion()){
             String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-            Usuario us = TListaUsuario.getUsuario(TListaUsuario.Buscar(ced));
+            Usuario us = TListaUsuario.getUsuario(ced);
             rr = new Registro(us, jDateChooser1.getDate(), jRadioButton1.isSelected());
         }
         return rr;

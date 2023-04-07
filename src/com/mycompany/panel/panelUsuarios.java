@@ -23,11 +23,11 @@ public class panelUsuarios extends javax.swing.JPanel {
     public panelUsuarios() {
         initComponents();
         panelFondo.add(new IngresoUsuarios("Ingresar"), "Usuarios");
-        jTable1.setModel(TListaUsuario.TablaPanelUsuario(TListaUsuario.lista));
+        Listar();
     }
     
     public static void Listar(){
-        jTable1.setModel(TListaUsuario.TablaPanelUsuario(TListaUsuario.lista));
+        jTable1.setModel(TListaUsuario.TablaBusquedaCed("", "Completa"));
     }
 
     /**
@@ -191,7 +191,7 @@ public class panelUsuarios extends javax.swing.JPanel {
 
     private void txtDatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoKeyReleased
         if(txtDato.equals("")){
-            jTable1.setModel(TListaUsuario.TablaPanelUsuario(TListaUsuario.lista));
+            Listar();
         }
     }//GEN-LAST:event_txtDatoKeyReleased
 
@@ -202,11 +202,8 @@ public class panelUsuarios extends javax.swing.JPanel {
                     JOptionPane.YES_NO_OPTION);
             if(opc == JOptionPane.YES_OPTION){
                 String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-                TListaUsuario.Eliminar(TListaUsuario.Buscar(ced));
-                jTable1.setModel(TListaUsuario.TablaPanelUsuario(TListaUsuario.lista));
-                try{
-                    TListaUsuario.guardar();
-                }catch(Exception ex){}
+                TListaUsuario.Eliminar(ced);
+                Listar();
             }
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el usuario a eliminar!");
@@ -225,7 +222,7 @@ public class panelUsuarios extends javax.swing.JPanel {
             panelFondo.repaint();
             
             String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-            IL.setDatos(TListaUsuario.getUsuario(TListaUsuario.Buscar(ced)));
+            IL.setDatos(TListaUsuario.getUsuario(ced));
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el usuario a editar!!");
         }

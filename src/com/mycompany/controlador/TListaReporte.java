@@ -40,12 +40,12 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            String comando = "INSERT INTO reportes VALUES ('"
+            String comando = "INSERT INTO REPORTES (CEDULA, IDLIBRO, FECHASALIDA, FECHAENTREGA, DEVUELTO, RETRASO, NOTA) VALUES ('"
                 +e.getCedula()+"','"
                     +e.getIDLibro()+"','"
-                        +cFecha.ImprimirFecha(e.getFechaSalida())+"','"
-                            +cFecha.ImprimirFecha(e.getFechaEntrega())+"','"
-                                +String.valueOf(e.getDevuelto())+"',"
+                        +cFecha.FechaSQL(e.getFechaSalida())+"','"
+                            +cFecha.FechaSQL(e.getFechaEntrega())+"',"
+                                +e.getDevuelto()+","
                                     +e.getRetraso()+",'"
                                         +e.getNota()+"')";
                 System.out.println(comando);
@@ -65,12 +65,12 @@ public class TListaReporte {
             String comando = "UPDATE libros SET "
                 +"CEDULA = '"+e.getCedula()+"',"
                         +"IDLIBRO = '"+e.getIDLibro()+"',"
-                                +"FECHASALIDA = '"+cFecha.ImprimirFecha(e.getFechaSalida())+"',"
-                                        +"FECHAENTREGA = '"+cFecha.ImprimirFecha(e.getFechaEntrega())+"',"
-                                                +"DEVUELTO = '"+String.valueOf(e.getDevuelto())+"',"
+                                +"FECHASALIDA = '"+cFecha.FechaSQL(e.getFechaSalida())+"',"
+                                        +"FECHAENTREGA = '"+cFecha.FechaSQL(e.getFechaEntrega())+"',"
+                                                +"DEVUELTO = "+e.getDevuelto()+","
                                                         +"RETRASO = "+e.getRetraso()+","
                                                                 +"NOTA = '"+e.getNota()+"'"
-                    +"WHERE ID="+e.getID()+";";
+                    +" WHERE ID="+e.getID()+";";
                 System.out.println(comando);
                 st.executeUpdate(comando);
         } catch (SQLException x) {
@@ -86,10 +86,10 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM REPORTES WHERE ID = "+i+";");
-            while(resultado.next()){
+            ResultSet resultado = st.executeQuery("SELECT * FROM REPORTES WHERE ID = '"+i+"';");
+            if(resultado.next()){
                 lb = new Reporte(resultado.getString(1), resultado.getString(2), cFecha.crearFecha(resultado.getString(3)),
-                        cFecha.crearFecha(resultado.getString(4)), Boolean.valueOf(resultado.getString(5)), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
+                        cFecha.crearFecha(resultado.getString(4)), resultado.getBoolean(5), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -112,7 +112,7 @@ public class TListaReporte {
         return tabla;
     }
     
-    public static ArrayList<Reporte> BusquedaCed(String dato){
+    /*public static ArrayList<Reporte> BusquedaCed(String dato){
         ArrayList<Reporte> Al = new ArrayList<Reporte>();
         
         for (int i = 0; i < lista.size(); i++) {
@@ -124,32 +124,46 @@ public class TListaReporte {
             
         }
         return Al;
-    }
+    }*/
     
     public static ArrayList<Reporte> NoDevueltosBusqueda(String dato){
-        ArrayList<Reporte> Al = new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
         
-        for (int i = 0; i < lista.size(); i++) {
-            Reporte e = lista.get(i);
-            if((e.getCedula().toLowerCase().startsWith(dato)
-                    ||String.valueOf(e.getIDLibro()).toLowerCase().startsWith(dato))&&!e.getDevuelto()){
-                Al.add(e);
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes WHERE DEVUELTO = 0 AND (CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%');");
+            while(resultado.next()){
+                ListaE.add(getReporte(resultado.getInt(1)));
             }
-            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return Al;
+        
+        return ListaE;
     }
     
     public static ArrayList<Reporte> NoDevueltos(){
-        ArrayList<Reporte> Al = new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
         
-        for (int i = 0; i < lista.size(); i++) {
-            Reporte e = lista.get(i);
-            if(!e.getDevuelto()){
-                Al.add(e);
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes WHERE DEVUELTO = 0;");
+            while(resultado.next()){
+                ListaE.add(getReporte(resultado.getInt(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return Al;
+        
+        return ListaE;
     }
     
     public static DefaultTableModel TablaReporteCuatroColumnas(ArrayList<Reporte> ListaE){
@@ -167,16 +181,62 @@ public class TListaReporte {
     
     
     public static ArrayList<Reporte> ordenamientoBurbuja(){
-        ArrayList<Reporte> al = lista;
-        for (int i = 0; i < al.size() - 1; i++) {
-            for (int j = 0; j < al.size() - i - 1; j++) {
-                if (al.get(j).getFechaEntrega().compareTo(al.get(j+1).getFechaEntrega()) < 0) {
-                    Reporte pe = al.get(j);
-                    al.set(j, al.get(j+1));
-                    al.set(j+1, pe);
-                }
+        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes ORDER BY FECHAENTREGA;");
+            while(resultado.next()){
+                ListaE.add(getReporte(resultado.getInt(1)));
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
         }
-        return al;
+        
+        return ListaE;
+    }
+    
+    public static ArrayList<Reporte> getLista(){
+        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
+        
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes;");
+            while(resultado.next()){
+                ListaE.add(getReporte(resultado.getInt(1)));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+        
+        return ListaE;
+    }
+    
+    public static ArrayList<Reporte> Busqueda(String dato){
+        ArrayList<Reporte> ListaE= new ArrayList<Reporte>();
+
+        Conexion Conex = new Conexion();
+        try {
+            Connection con = Conex.obtenerConexion();
+            Statement st = con.createStatement();
+            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes WHERE CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%';");
+            while(resultado.next()){
+                ListaE.add(getReporte(resultado.getInt(1)));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Conex.closeConexion();
+        }
+        
+        return ListaE;
     }
 }

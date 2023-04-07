@@ -14,7 +14,13 @@ import java.util.Date;
  */
 public class cFecha {
     public static String ImprimirFecha(Date fecha){
-        return (fecha.getDate()+"/"+(fecha.getMonth()+1)+"/"+(fecha.getYear()+1900));
+        return (fecha.getDate()+"-"+(fecha.getMonth()+1)+"-"+(fecha.getYear()+1900));
+    }
+    
+    public static String FechaSQL(Date fecha){
+        String str = "";
+        if(fecha.getMonth()<9)str="0";
+        return ((fecha.getYear()+1900)+"-"+str+(fecha.getMonth()+1)+"-"+fecha.getDate());
     }
     
     public static Date FechaActual(){
