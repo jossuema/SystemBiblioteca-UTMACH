@@ -97,7 +97,7 @@ public class TListaLibros {
             if(resultado.next()){
                 lb = new Libro(resultado.getString(1),
                     resultado.getString(2),
-                    cFecha.crearFecha(resultado.getString(3)),
+                    resultado.getDate(3),
                     resultado.getString(4),
                     resultado.getString(5),
                     resultado.getString(6),

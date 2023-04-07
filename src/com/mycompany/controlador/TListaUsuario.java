@@ -74,7 +74,7 @@ public class TListaUsuario {
                                                     +"TELEFONO='"+e.getTelefono()+"',"
                                                             +"CARRERA='"+e.getCarrera()+"',"
                                                                     +"FACULTAD= '"+e.getFacultad()
-                    +" WHERE CEDULA='"+ced+"';";
+                    +"' WHERE CEDULA='"+ced+"';";
                 System.out.println(comando);
                 st.executeUpdate(comando);
         } catch (SQLException x) {

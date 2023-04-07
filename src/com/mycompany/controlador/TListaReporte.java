@@ -40,7 +40,7 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            String comando = "INSERT INTO REPORTES (CEDULA, IDLIBRO, FECHASALIDA, FECHAENTREGA, DEVUELTO, RETRASO, NOTA) VALUES ('"
+            String comando = "INSERT INTO reportes (CEDULA, IDLIBRO, FECHASALIDA, FECHAENTREGA, DEVUELTO, RETRASO, NOTA) VALUES ('"
                 +e.getCedula()+"','"
                     +e.getIDLibro()+"','"
                         +cFecha.FechaSQL(e.getFechaSalida())+"','"
@@ -62,7 +62,7 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            String comando = "UPDATE libros SET "
+            String comando = "UPDATE reportes SET "
                 +"CEDULA = '"+e.getCedula()+"',"
                         +"IDLIBRO = '"+e.getIDLibro()+"',"
                                 +"FECHASALIDA = '"+cFecha.FechaSQL(e.getFechaSalida())+"',"
@@ -88,8 +88,8 @@ public class TListaReporte {
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("SELECT * FROM REPORTES WHERE ID = '"+i+"';");
             if(resultado.next()){
-                lb = new Reporte(resultado.getString(1), resultado.getString(2), cFecha.crearFecha(resultado.getString(3)),
-                        cFecha.crearFecha(resultado.getString(4)), resultado.getBoolean(5), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
+                lb = new Reporte(resultado.getString(1), resultado.getString(2), resultado.getDate(3),
+                        resultado.getDate(4), resultado.getBoolean(5), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

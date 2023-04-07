@@ -189,6 +189,7 @@ public class IngresoRegistro extends javax.swing.JPanel {
         if(le!=null){
             TlistaRegistro.Agregar(le);
             System.out.println("Guardado");
+            this.hide();
 
         }
         panelRegistro.Listar();

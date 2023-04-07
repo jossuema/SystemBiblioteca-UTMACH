@@ -302,7 +302,7 @@ public class prestamo extends javax.swing.JPanel {
         Reporte re = leer();
         if(re!=null){
             TListaReporte.Agregar(re);
-            String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 0).toString();
+            String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
             Libro lb = TListaLibros.getLibro(ced);
             lb.reducirStock(1);
             TListaLibros.Editar(lb, ced);
