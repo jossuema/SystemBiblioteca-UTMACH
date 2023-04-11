@@ -35,6 +35,11 @@ public class TListaReporte {
         }
     }*/
     
+    public static Reporte Molde(ResultSet resultado) throws SQLException{
+        return new Reporte(resultado.getString(1), resultado.getString(2), resultado.getDate(3),
+                        resultado.getDate(4), resultado.getBoolean(5), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
+    }
+    
     public static void Agregar(Reporte e){
         Conexion Conex = new Conexion();
         try {
@@ -88,8 +93,7 @@ public class TListaReporte {
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("SELECT * FROM REPORTES WHERE ID = '"+i+"';");
             if(resultado.next()){
-                lb = new Reporte(resultado.getString(1), resultado.getString(2), resultado.getDate(3),
-                        resultado.getDate(4), resultado.getBoolean(5), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
+                lb = Molde(resultado);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -133,9 +137,9 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes WHERE DEVUELTO = 0 AND (CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%');");
+            ResultSet resultado = st.executeQuery("SELECT * FROM reportes WHERE DEVUELTO = 0 AND (CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%');");
             while(resultado.next()){
-                ListaE.add(getReporte(resultado.getInt(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -153,9 +157,9 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes WHERE DEVUELTO = 0;");
+            ResultSet resultado = st.executeQuery("SELECT * FROM reportes WHERE DEVUELTO = 0;");
             while(resultado.next()){
-                ListaE.add(getReporte(resultado.getInt(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -187,9 +191,9 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes ORDER BY FECHAENTREGA;");
+            ResultSet resultado = st.executeQuery("SELECT * FROM reportes ORDER BY FECHAENTREGA;");
             while(resultado.next()){
-                ListaE.add(getReporte(resultado.getInt(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -207,9 +211,9 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes;");
+            ResultSet resultado = st.executeQuery("SELECT * FROM reportes;");
             while(resultado.next()){
-                ListaE.add(getReporte(resultado.getInt(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -227,9 +231,9 @@ public class TListaReporte {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM reportes WHERE CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%';");
+            ResultSet resultado = st.executeQuery("SELECT * FROM reportes WHERE CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%';");
             while(resultado.next()){
-                ListaE.add(getReporte(resultado.getInt(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

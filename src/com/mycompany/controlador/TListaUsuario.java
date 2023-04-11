@@ -24,6 +24,18 @@ import javax.swing.table.DefaultTableModel;
  * @author negri
  */
 public class TListaUsuario {
+    
+    public static Usuario Molde(ResultSet resultado) throws SQLException{
+        return new Usuario(resultado.getString(1),
+                        resultado.getString(2),
+                        resultado.getString(3),
+                        resultado.getString(4),
+                        resultado.getString(5),
+                        resultado.getString(6),
+                        resultado.getString(7),
+                resultado.getString(8));
+    }
+    
     public static void Eliminar(String ced){
         Conexion Conex = new Conexion();
         try {
@@ -92,14 +104,7 @@ public class TListaUsuario {
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("SELECT * FROM usuarios WHERE CEDULA='"+ced+"';");
             if(resultado.next()){
-                lb = new Usuario(resultado.getString(1),
-                        resultado.getString(2),
-                        resultado.getString(3),
-                        resultado.getString(4),
-                        resultado.getString(5),
-                        resultado.getString(6),
-                        resultado.getString(7),
-                resultado.getString(8));
+                lb = Molde(resultado);
             } 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -146,9 +151,9 @@ public class TListaUsuario {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT CEDULA FROM usuarios WHERE CEDULA LIKE '"+ced+"%';");
+            ResultSet resultado = st.executeQuery("SELECT * FROM usuarios WHERE CEDULA LIKE '"+ced+"%';");
             while(resultado.next()){
-                listaE.add(getUsuario(resultado.getString(1)));
+                listaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -169,10 +174,10 @@ public class TListaUsuario {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT CEDULA FROM usuarios "
+            ResultSet resultado = st.executeQuery("SELECT * FROM usuarios "
                     + "WHERE CEDULA LIKE '"+ced+"%' OR NOMBRE LIKE '"+ced+"%' OR APELLIDOP LIKE '"+ced+"%' OR APELLIDOM LIKE'"+ced+"%' OR CARRERA LIKE '"+ced+"%' OR FACULTAD LIKE '"+ced+"%';");
             while(resultado.next()){
-                listaE.add(getUsuario(resultado.getString(1)));
+                listaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

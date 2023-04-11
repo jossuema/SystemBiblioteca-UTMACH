@@ -8,16 +8,11 @@ package com.mycompany.controlador;
 import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Registro;
 import com.mycompany.entidades.Usuario;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 
@@ -26,6 +21,12 @@ import javax.swing.table.DefaultTableModel;
  * @author negri
  */
 public class TlistaRegistro{
+    
+    public static Registro Molde(ResultSet resultado) throws SQLException{
+        return new Registro(new Usuario(resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(4), resultado.getString(5)
+                        , resultado.getString(6), resultado.getString(7), resultado.getString(8)), resultado.getDate(9), resultado.getBoolean(10), resultado.getInt(11));
+    }
+    
     public static void Eliminar(String id){
         Conexion Conex = new Conexion();
         try {
@@ -65,8 +66,7 @@ public class TlistaRegistro{
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA WHERE A.ID = '"+id+"';");
             if(resultado.next()){
-                lb = new Registro(new Usuario(resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(4), resultado.getString(5)
-                        , resultado.getString(6), resultado.getString(7), resultado.getString(8)), resultado.getDate(9), resultado.getBoolean(10), resultado.getInt(11));
+                lb = Molde(resultado);
             } 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -105,10 +105,10 @@ public class TlistaRegistro{
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM registros WHERE FECHA = '"+cFecha.FechaSQL(fecha)+"';");
+            ResultSet resultado = st.executeQuery("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA WHERE FECHA = '"+cFecha.FechaSQL(fecha)+"';");
             System.out.println(cFecha.FechaSQL(fecha));
             while(resultado.next()) {                
-                ListaE.add(getRegistro(resultado.getString(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -126,7 +126,7 @@ public class TlistaRegistro{
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA "
+            ResultSet resultado = st.executeQuery("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA "
                     + "WHERE CEDULA LIKE '"+clave+"%' OR NOMBRE LIKE '"+clave+"%' OR APELLIDOP LIKE '"+clave+"%' OR APELLIDOM LIKE '"+clave+"%' OR CARRERA LIKE '"+clave+"%' OR FACULTAD LIKE '"+clave+"%';");
             while(resultado.next()) {                
                 ListaE.add(getRegistro(resultado.getString(1)));
@@ -142,7 +142,7 @@ public class TlistaRegistro{
     public static ArrayList<Registro> TablaBusquedaAmbos(Date fecha, String clave){
         ArrayList<Registro> ListaFechas =  TablaBusquedaFecha(fecha);
         ArrayList<Registro> ListaVarios = TablaBusquedaVarios(clave);
-        ArrayList<Registro> ListaE =  new ArrayList<Registro>();
+        ArrayList<Registro> ListaE =  new ArrayList<>();
         
         for (int i = 0; i < ListaVarios.size(); i++) {
             Registro v = ListaVarios.get(i);
@@ -164,9 +164,9 @@ public class TlistaRegistro{
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM registros;");
+            ResultSet resultado = st.executeQuery("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA;");
             while(resultado.next()){
-                ListaE.add(getRegistro(resultado.getString(1)));
+                ListaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -227,7 +227,7 @@ public class TlistaRegistro{
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM registros ORDER BY FECHA;");
+            ResultSet resultado = st.executeQuery("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA ORDER BY FECHA;");
             while(resultado.next()){
                 ListaE.add(getRegistro(resultado.getString(1)));
             }

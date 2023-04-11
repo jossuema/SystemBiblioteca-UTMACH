@@ -21,6 +21,20 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TListaLibros {
     
+    public static Libro Molde(ResultSet resultado)throws SQLException{
+        return new Libro(resultado.getString(1),
+                    resultado.getString(2),
+                    resultado.getDate(3),
+                    resultado.getString(4),
+                    resultado.getString(5),
+                    resultado.getString(6),
+                    resultado.getString(7),
+                    resultado.getInt(8),
+                    resultado.getString(9),
+                    resultado.getInt(10),
+                    resultado.getBoolean(11));
+    }
+    
     public static void Eliminar(String id){
         Conexion Conex = new Conexion();
         try {
@@ -95,17 +109,7 @@ public class TListaLibros {
             Statement st = con.createStatement();
             ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE ID='"+id+"';");
             if(resultado.next()){
-                lb = new Libro(resultado.getString(1),
-                    resultado.getString(2),
-                    resultado.getDate(3),
-                    resultado.getString(4),
-                    resultado.getString(5),
-                    resultado.getString(6),
-                    resultado.getString(7),
-                    resultado.getInt(8),
-                    resultado.getString(9),
-                    resultado.getInt(10),
-                    resultado.getBoolean(11));
+                lb = Molde(resultado);
             }
             
         } catch (SQLException e) {
@@ -157,9 +161,9 @@ public class TListaLibros {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM libros WHERE ID LIKE '"+ced+"%';");
+            ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE ID LIKE '"+ced+"%';");
             while(resultado.next()){
-                listaE.add(getLibro(resultado.getString(1)));
+                listaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -180,10 +184,10 @@ public class TListaLibros {
         try {
             Connection con = Conex.obtenerConexion();
             Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT ID FROM libros WHERE TITULO LIKE '%"+ced+"%' OR FECHA LIKE '%"+ced+"%' OR CATEGORIA LIKE '"+ced+"%' "
+            ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE TITULO LIKE '%"+ced+"%' OR FECHA LIKE '%"+ced+"%' OR CATEGORIA LIKE '"+ced+"%' "
                     + "OR EDICION LIKE '"+ced+"%' OR AUTOR LIKE '%"+ced+"%' OR IDIOMA LIKE '"+ced+"%';");
             while(resultado.next()){
-                listaE.add(getLibro(resultado.getString(1)));
+                listaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

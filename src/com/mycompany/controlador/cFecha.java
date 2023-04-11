@@ -31,8 +31,7 @@ public class cFecha {
     
     public static Date crearFecha(String date){
         String[] lb = date.split("-");
-        Date dt = new Date(Integer.valueOf(lb[2])-1900, Integer.valueOf(lb[1])-1, Integer.valueOf(lb[0]));
-        return dt;
+        return new Date(Integer.parseInt(lb[2])-1900, Integer.parseInt(lb[1])-1, Integer.parseInt(lb[0]));
     }
     
     public static long DiasDiferencia(Date primera, Date segunda){
