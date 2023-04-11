@@ -11,6 +11,6 @@ Construido bajo el diseño MODELO-VISTA-CONTROLADOR (MVC)
 - Reporte
 
 Librerias utilizadas: Java Swing, JCalendar, MySQL connector
-Desarrollado en JAVA 8
+<br> Desarrollado en JAVA 8
 
 Autoria: Manuel Josue Malla & Fernando Jaya
