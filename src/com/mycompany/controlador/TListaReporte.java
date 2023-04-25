@@ -9,6 +9,7 @@ import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Reporte;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,64 +42,80 @@ public class TListaReporte {
     }
     
     public static void Agregar(Reporte e){
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            String comando = "INSERT INTO reportes (CEDULA, IDLIBRO, FECHASALIDA, FECHAENTREGA, DEVUELTO, RETRASO, NOTA) VALUES ('"
-                +e.getCedula()+"','"
-                    +e.getIDLibro()+"','"
-                        +cFecha.FechaSQL(e.getFechaSalida())+"','"
-                            +cFecha.FechaSQL(e.getFechaEntrega())+"',"
-                                +e.getDevuelto()+","
-                                    +e.getRetraso()+",'"
-                                        +e.getNota()+"')";
-                System.out.println(comando);
-                st.executeUpdate(comando);
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("INSERT INTO reportes (CEDULA, IDLIBRO, FECHASALIDA, FECHAENTREGA, DEVUELTO, RETRASO, NOTA) VALUES (?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, e.getCedula());
+            st.setString(2, e.getIDLibro());
+            st.setString(3, cFecha.FechaSQL(e.getFechaSalida()));
+            st.setString(4, cFecha.FechaSQL(e.getFechaEntrega()));
+            st.setBoolean(5, e.getDevuelto());
+            st.setInt(6, e.getRetraso());
+            st.setString(7, e.getNota());
+            st.executeUpdate();
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
     public static void Editar(Reporte e){
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            String comando = "UPDATE reportes SET "
-                +"CEDULA = '"+e.getCedula()+"',"
-                        +"IDLIBRO = '"+e.getIDLibro()+"',"
-                                +"FECHASALIDA = '"+cFecha.FechaSQL(e.getFechaSalida())+"',"
-                                        +"FECHAENTREGA = '"+cFecha.FechaSQL(e.getFechaEntrega())+"',"
-                                                +"DEVUELTO = "+e.getDevuelto()+","
-                                                        +"RETRASO = "+e.getRetraso()+","
-                                                                +"NOTA = '"+e.getNota()+"'"
-                    +" WHERE ID="+e.getID()+";";
-                System.out.println(comando);
-                st.executeUpdate(comando);
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("UPDATE reportes SET CEDULA = ?,IDLIBRO = ?, FECHASALIDA = ?, FECHAENTREGA = ?, DEVUELTO = ?, RETRASO = ?, NOTA = ? WHERE ID = ?;");
+            st.setString(1, e.getCedula());
+            st.setString(2, e.getIDLibro());
+            st.setString(3, cFecha.FechaSQL(e.getFechaSalida()));
+            st.setString(4, cFecha.FechaSQL(e.getFechaEntrega()));
+            st.setBoolean(5, e.getDevuelto());
+            st.setInt(6, e.getRetraso());
+            st.setString(7, e.getNota());
+            st.setInt(8, e.getID());
+            st.executeUpdate();
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
     public static Reporte getReporte(int i){
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         Reporte lb = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM REPORTES WHERE ID = '"+i+"';");
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM REPORTES WHERE ID = ?;");
+            st.setInt(1, i);
+            resultado = st.executeQuery();
             if(resultado.next()){
                 lb = Molde(resultado);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         return lb;
     }
@@ -144,7 +161,12 @@ public class TListaReporte {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;
@@ -164,7 +186,12 @@ public class TListaReporte {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;
@@ -198,7 +225,12 @@ public class TListaReporte {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;
@@ -218,7 +250,12 @@ public class TListaReporte {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;
@@ -238,7 +275,12 @@ public class TListaReporte {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;

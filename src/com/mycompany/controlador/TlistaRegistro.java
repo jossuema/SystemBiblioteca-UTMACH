@@ -36,7 +36,12 @@ public class TlistaRegistro{
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
@@ -54,7 +59,12 @@ public class TlistaRegistro{
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
@@ -71,7 +81,12 @@ public class TlistaRegistro{
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         return lb;
     }
@@ -113,7 +128,12 @@ public class TlistaRegistro{
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;
@@ -134,7 +154,12 @@ public class TlistaRegistro{
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         return ListaE;
     }
@@ -171,7 +196,12 @@ public class TlistaRegistro{
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;
@@ -234,7 +264,12 @@ public class TlistaRegistro{
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         return ListaE;

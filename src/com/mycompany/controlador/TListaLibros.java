@@ -9,6 +9,7 @@ import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Libro;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,78 +37,94 @@ public class TListaLibros {
     }
     
     public static void Eliminar(String id){
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM libros WHERE ID='"+id+"';");
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("DELETE FROM libros WHERE ID='"+id+"';");
+            st.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
     public static void Agregar(Libro e){
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            String comando = "INSERT INTO libros VALUES ('"
-                +e.getID()+"','"
-                    +e.getTitulo()+"','"
-                            +cFecha.FechaSQL(e.getFecha())+"','"
-                                    +e.getAutor()+"','"
-                                            +e.getCategoria()+"','"
-                                                    +e.getEdicion()+"','"
-                                                            +e.getIdioma()+"',"
-                                                                    +e.getPaginas()+",'"
-                                                                            +e.getDescripcion()+"',"
-                                                                                    +e.getStock()+","
-                                                                                            +e.getDisponible()+")";
-                System.out.println(comando);
-                st.executeUpdate(comando);
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("INSERT INTO libros VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            st.setString(1, e.getID());
+            st.setString(2, e.getTitulo());
+            st.setString(3, cFecha.FechaSQL(e.getFecha()));
+            st.setString(4, e.getAutor());
+            st.setString(5, e.getCategoria());
+            st.setString(6, e.getEdicion());
+            st.setString(7, e.getIdioma());
+            st.setInt(8, e.getPaginas());
+            st.setString(9, e.getDescripcion());
+            st.setInt(10, e.getStock());
+            st.setBoolean(11, e.getDisponible());
+            st.executeUpdate();
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
     public static void Editar(Libro e, String id){
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            String comando = "UPDATE libros SET "
-                +"ID='"+e.getID()+"',"
-                    +"TITULO='"+e.getTitulo()+"',"
-                            +"FECHA='"+cFecha.ImprimirFecha(e.getFecha())+"',"
-                                    +"AUTOR='"+e.getAutor()+"',"
-                                            +"CATEGORIA='"+e.getCategoria()+"',"
-                                                    +"EDICION='"+e.getEdicion()+"',"
-                                                            +"IDIOMA='"+e.getIdioma()+"',"
-                                                                    +"PAGINAS="+e.getPaginas()+","
-                                                                            +"DESCRIPCION='"+e.getDescripcion()+"',"
-                                                                                    +"STOCK="+e.getStock()+","
-                                                                                            +"DISPONIBLE="+e.getDisponible()
-                    +" WHERE ID='"+id+"';";
-                System.out.println(comando);
-                st.executeUpdate(comando);
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("UPDATE libros SET ID = ?, TITULO = ?, FECHA = ?, AUTOR = ?, CATEGORIA = ?, EDICION = ?, IDIOMA = ?, PAGINAS = ?,DESCRIPCION = ?, STOCK = ?, DISPONIBLE = ? WHERE ID = ? ;");
+            st.setString(1, e.getID());
+            st.setString(2, e.getTitulo());
+            st.setString(3, cFecha.FechaSQL(e.getFecha()));
+            st.setString(4, e.getAutor());
+            st.setString(5, e.getCategoria());
+            st.setString(6, e.getEdicion());
+            st.setString(7, e.getIdioma());
+            st.setInt(8, e.getPaginas());
+            st.setString(9, e.getDescripcion());
+            st.setInt(10, e.getStock());
+            st.setBoolean(11, e.getDisponible());
+            st.setString(12, id);
+            st.executeUpdate();
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
     public static Libro getLibro(String id){        
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         Libro lb = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE ID='"+id+"';");
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM libros WHERE ID='"+id+"';");
+            resultado = st.executeQuery();
             if(resultado.next()){
                 lb = Molde(resultado);
             }
@@ -115,7 +132,13 @@ public class TListaLibros {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         return lb;
     }
@@ -156,19 +179,26 @@ public class TListaLibros {
     
     public static DefaultTableModel TablaBusquedaID(String ced, String clave){
         ArrayList<Libro> listaE = new ArrayList<>();
-        
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE ID LIKE '"+ced+"%';");
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM libros WHERE ID LIKE '"+ced+"%';");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 listaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         if(clave.equals("Completa")){
@@ -179,20 +209,32 @@ public class TListaLibros {
     
     public static DefaultTableModel TablaBusquedaVarios(String ced, String clave){
         ArrayList<Libro> listaE = new ArrayList<>();
-        
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM libros WHERE TITULO LIKE '%"+ced+"%' OR FECHA LIKE '%"+ced+"%' OR CATEGORIA LIKE '"+ced+"%' "
-                    + "OR EDICION LIKE '"+ced+"%' OR AUTOR LIKE '%"+ced+"%' OR IDIOMA LIKE '"+ced+"%';");
+            con = Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM libros WHERE TITULO LIKE %?% OR FECHA LIKE '%?%' OR CATEGORIA LIKE ?% OR EDICION LIKE ?% OR AUTOR LIKE %?% OR IDIOMA LIKE ?%;");
+            st.setString(1, ced);
+            st.setString(2, ced);
+            st.setString(3, ced);
+            st.setString(4, ced);
+            st.setString(5, ced);
+            st.setString(6, ced);
+            resultado = st.executeQuery();
             while(resultado.next()){
                 listaE.add(Molde(resultado));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         if(clave.equals("Completa")){

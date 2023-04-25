@@ -14,14 +14,14 @@ import java.sql.SQLException;
  * @author negri
  */
 public class Conexion {
-    private Connection conexion = null;
-    private final String user = "root";
-    private final String psw = "Root800#";
-    private final String url = "jdbc:mysql://localhost:3306/dblibreria";
+    private static Connection conexion = null;
+    private static final String user = "root";
+    private static final String psw = "Root800#";
+    private static final String url = "jdbc:mysql://localhost:3306/dblibreria";
     
     public Conexion(){}
     
-    public Connection obtenerConexion()throws SQLException{ 
+    public static Connection obtenerConexion()throws SQLException{ 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conexion = DriverManager.getConnection(url, user, psw);
@@ -34,12 +34,7 @@ public class Conexion {
         return conexion;
     }
     
-    public void closeConexion(){
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            System.out.println("ERROR:al cerrar la conexión");
-            ex.printStackTrace();
-        }
+    public static void closeConexion() throws SQLException{
+        conexion.close();
     }
 }

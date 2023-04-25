@@ -45,7 +45,12 @@ public class TListaUsuario {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
@@ -68,7 +73,12 @@ public class TListaUsuario {
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
@@ -92,7 +102,12 @@ public class TListaUsuario {
         } catch (SQLException x) {
             System.out.println(x.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
@@ -109,7 +124,12 @@ public class TListaUsuario {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         return lb;
     }
@@ -158,7 +178,12 @@ public class TListaUsuario {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         if(clave.equals("Completa")){
@@ -183,7 +208,12 @@ public class TListaUsuario {
             System.out.println(e.getMessage());
             e.printStackTrace();
         } finally {
-            Conex.closeConexion();
+            try{
+                Conexion.closeConexion();
+                
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         if(clave.equals("Completa")){
