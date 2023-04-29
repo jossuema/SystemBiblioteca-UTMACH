@@ -38,7 +38,11 @@ public class TListaReporte {
     
     private Connection conexionTransaccional;
     
-    public TListaReporte(){}
+    public TListaReporte(){
+        try{
+            this.conexionTransaccional = Conexion.obtenerConexion();
+        }catch(SQLException ex){}
+    }
     public TListaReporte(Connection con){
         this.conexionTransaccional = con;
     }

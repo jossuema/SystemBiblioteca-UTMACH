@@ -25,7 +25,9 @@ public class TListaLibros {
     private Connection conexionTransaccional;
     
     public TListaLibros(){
-        
+        try{
+            this.conexionTransaccional = Conexion.obtenerConexion();
+        }catch(SQLException ex){}
     }
     
     public TListaLibros(Connection con){

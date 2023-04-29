@@ -25,7 +25,11 @@ public class TlistaRegistro{
     
     private Connection conexionTransaccional;
     
-    public TlistaRegistro(){}
+    public TlistaRegistro(){
+        try{
+            this.conexionTransaccional = Conexion.obtenerConexion();
+        }catch(SQLException ex){}
+    }
     public TlistaRegistro(Connection con){
         this.conexionTransaccional = con;
     }

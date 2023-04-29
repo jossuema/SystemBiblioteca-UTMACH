@@ -28,7 +28,11 @@ public class TListaUsuario {
     
     private Connection conexionTransaccional;
     
-    public TListaUsuario(){}
+    public TListaUsuario(){
+        try{
+            this.conexionTransaccional = Conexion.obtenerConexion();
+        }catch(SQLException ex){}
+    }
     public TListaUsuario(Connection con){
         this.conexionTransaccional = con;
     }
