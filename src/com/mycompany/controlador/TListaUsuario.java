@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +26,14 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TListaUsuario {
     
-    public static Usuario Molde(ResultSet resultado) throws SQLException{
+    private Connection conexionTransaccional;
+    
+    public TListaUsuario(){}
+    public TListaUsuario(Connection con){
+        this.conexionTransaccional = con;
+    }
+    
+    private Usuario Molde(ResultSet resultado) throws SQLException{
         return new Usuario(resultado.getString(1),
                         resultado.getString(2),
                         resultado.getString(3),
@@ -36,80 +44,102 @@ public class TListaUsuario {
                 resultado.getString(8));
     }
     
-    public static void Eliminar(String ced){
-        Conexion Conex = new Conexion();
+    public void Eliminar(String ced)throws SQLException{
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM usuarios WHERE CEDULA='"+ced+"';");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("DELETE FROM usuarios WHERE CEDULA = ?;");
+            st.setString(1, ced);
+            st.executeUpdate();
         } finally {
-            Conex.closeConexion();
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
-    public static void Agregar(Usuario e){
-        Conexion Conex = new Conexion();
+    public void Agregar(Usuario e)throws SQLException{
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            String comando = "INSERT INTO usuarios VALUES ('"
-                +e.getCedula()+"','"
-                    +e.getNombre()+"','"
-                        +e.getApellidoP()+"','"
-                            +e.getApellidoM()+"','"
-                                    +e.getDomicilio()+"','"
-                                        +e.getTelefono()+"','"
-                                            +e.getCarrera()+"','"
-                                                +e.getFacultad()+"')";
-                System.out.println(comando);
-                st.executeUpdate(comando);
-        } catch (SQLException x) {
-            System.out.println(x.getMessage());
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("INSERT INTO usuarios VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, e.getCedula());
+            st.setString(2, e.getNombre());
+            st.setString(3, e.getApellidoP());
+            st.setString(4, e.getApellidoM());
+            st.setString(5, e.getDomicilio());
+            st.setString(6, e.getTelefono());
+            st.setString(7, e.getCarrera());
+            st.setString(8, e.getFacultad());        
+            st.executeUpdate();
         } finally {
-            Conex.closeConexion();
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
-    public static void Editar(Usuario e, String ced){
-        Conexion Conex = new Conexion();
+    public void Editar(Usuario e, String ced)throws SQLException{
+        Connection con = null;
+        PreparedStatement st = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            String comando = "UPDATE usuarios SET "
-                +"CEDULA='"+e.getCedula()+"',"
-                    +"NOMBRE='"+e.getNombre()+"',"
-                            +"APELLIDOP='"+e.getApellidoP()+"',"
-                                    +"APELLIDOM='"+e.getApellidoM()+"',"
-                                            +"DOMICILIO='"+e.getDomicilio()+"',"
-                                                    +"TELEFONO='"+e.getTelefono()+"',"
-                                                            +"CARRERA='"+e.getCarrera()+"',"
-                                                                    +"FACULTAD= '"+e.getFacultad()
-                    +"' WHERE CEDULA='"+ced+"';";
-                System.out.println(comando);
-                st.executeUpdate(comando);
-        } catch (SQLException x) {
-            System.out.println(x.getMessage());
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("UPDATE usuarios SET CEDULA = ?, NOMBRE = ?, APELLIDOP = ?, APELLIDOM = ?, DOMICILIO = ?, TELEFONO = ?, CARRERA = ?, FACULTAD = ? WHERE CEDULA = ?;");
+            st.setString(1, e.getCedula());
+            st.setString(2, e.getNombre());
+            st.setString(3, e.getApellidoP());
+            st.setString(4, e.getApellidoM());
+            st.setString(5, e.getDomicilio());
+            st.setString(6, e.getTelefono());
+            st.setString(7, e.getCarrera());
+            st.setString(8, e.getFacultad());        
+            st.executeUpdate();
         } finally {
-            Conex.closeConexion();
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
     }
     
-    public static Usuario getUsuario(String ced){        
-        Conexion Conex = new Conexion();
+    public Usuario getUsuario(String ced)throws SQLException{        
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         Usuario lb = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM usuarios WHERE CEDULA='"+ced+"';");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM usuarios WHERE CEDULA='"+ced+"';");
+            resultado = st.executeQuery();
             if(resultado.next()){
                 lb = Molde(resultado);
             } 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         return lb;
     }
@@ -144,21 +174,29 @@ public class TListaUsuario {
         return tabla;
     }
     
-    public static DefaultTableModel TablaBusquedaCed(String ced, String clave){
+    public DefaultTableModel TablaBusquedaCed(String ced, String clave)throws SQLException{
         ArrayList<Usuario> listaE = new ArrayList<Usuario>();
         
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM usuarios WHERE CEDULA LIKE '"+ced+"%';");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM usuarios WHERE CEDULA LIKE '"+ced+"%';");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 listaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
-            Conex.closeConexion();
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         if(clave.equals("Completa")){
@@ -167,23 +205,30 @@ public class TListaUsuario {
         return TablaCuatroColumnas(listaE);
     }
     
-    public static DefaultTableModel TablaBusquedaVarios(String ced, String clave){
+    public DefaultTableModel TablaBusquedaVarios(String ced, String clave)throws SQLException{
         ArrayList<Usuario> listaE = new ArrayList<Usuario>();
         
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM usuarios "
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM usuarios "
                     + "WHERE CEDULA LIKE '"+ced+"%' OR NOMBRE LIKE '"+ced+"%' OR APELLIDOP LIKE '"+ced+"%' OR APELLIDOM LIKE'"+ced+"%' OR CARRERA LIKE '"+ced+"%' OR FACULTAD LIKE '"+ced+"%';");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 listaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
         } finally {
-            Conex.closeConexion();
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
         
         if(clave.equals("Completa")){

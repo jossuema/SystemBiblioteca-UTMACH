@@ -61,7 +61,6 @@ public class Reporte {
     public void Devolver(){
         this.Devuelto = true;
         
-        TListaLibros.getLibro(IDLibro).aumentarStock(1);
         long dias = cFecha.DiasDiferencia(cFecha.FechaActual(), fechaEntrega);
         if(dias>0){
             this.Retraso = (int) dias;

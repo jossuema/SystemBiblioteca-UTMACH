@@ -9,6 +9,7 @@ import com.mycompany.controlador.TListaLibros;
 import com.mycompany.controlador.Validaciones;
 import com.mycompany.entidades.Libro;
 import java.awt.Color;
+import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
@@ -25,6 +26,7 @@ public class IngresoLibros extends javax.swing.JPanel {
     
     String funcion;
     String CedG;
+    
     public IngresoLibros(String fun) {
         initComponents();
         this.funcion = fun;
@@ -335,9 +337,17 @@ public class IngresoLibros extends javax.swing.JPanel {
             Libro e = new Libro(id, titulo, dt, autor, categoria, edicion, idioma, paginas, descripcion, stock, disponible);
             
             if(funcion.equals("Ingreso")){
-                TListaLibros.Agregar(e);
+                try{
+                    Libros.CLibros.Agregar(e);
+                }catch(SQLException ex){
+
+                } 
             }else{
-                TListaLibros.Editar(e, CedG);
+                try{
+                    Libros.CLibros.Editar(e, CedG);
+                }catch(SQLException ex){
+
+                }
                 this.hide();
             }
             Libros.Listar();
@@ -422,8 +432,13 @@ public class IngresoLibros extends javax.swing.JPanel {
             ok = false;
         }
         
-        
-        if(TListaLibros.getLibro(txtID.getText())!=null){
+        Libros lb = null;
+        try{
+            Libros.CLibros.getLibro(txtID.getText());
+        }catch(SQLException ex){
+            
+        }
+        if(lb!=null){
             if(funcion.equals("Ingreso")){
                 msj += "Ya existe un libro con el ID: "+txtID.getText();
                 ok = false;
