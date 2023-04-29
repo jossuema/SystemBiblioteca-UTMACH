@@ -8,6 +8,7 @@ package com.mycompany.panel;
 import com.mycompany.controlador.TlistaRegistro;
 import com.mycompany.entidades.Usuario;
 import java.awt.CardLayout;
+import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JOptionPane;
 
@@ -20,14 +21,23 @@ public class panelRegistro extends javax.swing.JPanel {
     /**
      * Creates new form Registro
      */
+    
+    static TlistaRegistro CRegistro;
+    
     public panelRegistro() {
         initComponents();
+        this.CRegistro = new TlistaRegistro();
         panelFondo.add(new IngresoRegistro(), "Ingreso");
         Listar();
     }
     
     public static void Listar(){
-        tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
+        try{
+            tabla.setModel(CRegistro.TablaPanelRegistro(CRegistro.getLISTA()));
+        }catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        
     }
 
     panelRegistro(Usuario us, Date date, boolean selected) {
@@ -239,17 +249,31 @@ public class panelRegistro extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         if(!txtDato.getText().equals("")&&!(jDateChooser1.getDate()==null)){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.TablaBusquedaAmbos(jDateChooser1.getDate(), txtDato.getText())));
+            try{
+                tabla.setModel(CRegistro.TablaPanelRegistro(CRegistro.TablaBusquedaAmbos(jDateChooser1.getDate(), txtDato.getText())));
+            }catch(SQLException ex){
+                ex.printStackTrace();
+            }
         }else if(!(jDateChooser1.getDate()==null)){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.TablaBusquedaFecha(jDateChooser1.getDate())));
+            try{
+                tabla.setModel(CRegistro.TablaPanelRegistro(CRegistro.TablaBusquedaFecha(jDateChooser1.getDate())));
+            }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+            
         }else if(!txtDato.equals("")){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.TablaBusquedaVarios(txtDato.getText())));
+            try{
+                tabla.setModel(CRegistro.TablaPanelRegistro(CRegistro.TablaBusquedaVarios(txtDato.getText())));
+            }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+            
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void txtDatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoKeyReleased
         if(txtDato.getText().equals("")){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
+            Listar();
         }
     }//GEN-LAST:event_txtDatoKeyReleased
 
@@ -260,7 +284,11 @@ public class panelRegistro extends javax.swing.JPanel {
                     JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE);
             if(opc == JOptionPane.YES_OPTION){
                 String ced = tabla.getValueAt(tabla.getSelectedRow(), 0).toString();
-                TlistaRegistro.Eliminar(ced);
+                try{
+                    CRegistro.Eliminar(ced);
+                }catch(SQLException ex){
+                    ex.printStackTrace();
+                }
                 Listar();
             }
             
@@ -278,18 +306,23 @@ public class panelRegistro extends javax.swing.JPanel {
     }//GEN-LAST:event_tablaKeyReleased
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.ordenamientoBurbuja()));
+
+        try{
+            tabla.setModel(CRegistro.TablaPanelRegistro(CRegistro.ordenamientoBurbuja()));
+        }catch(SQLException ex){
+            
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jDateChooser1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jDateChooser1KeyReleased
         if(jDateChooser1.getDate()==null&&txtDato.getText().equals("")){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
+            Listar();
         }
     }//GEN-LAST:event_jDateChooser1KeyReleased
 
     private void txtDatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDatoActionPerformed
         if(jDateChooser1.getDate()==null&&txtDato.getText().equals("")){
-            tabla.setModel(TlistaRegistro.TablaPanelRegistro(TlistaRegistro.getLISTA()));
+            Listar();
         }
     }//GEN-LAST:event_txtDatoActionPerformed
 

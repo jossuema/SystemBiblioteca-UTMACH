@@ -7,6 +7,7 @@ package com.mycompany.panel;
 
 import com.mycompany.controlador.TListaLibros;
 import java.awt.CardLayout;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,12 +22,20 @@ public class Libros extends javax.swing.JPanel {
      */
     public Libros() {
         initComponents();
+        this.CLibros = new TListaLibros();
         panelFondo.add(new IngresoLibros("Ingreso"), "Ingreso");
         Listar();
     }
     
+    static TListaLibros CLibros;
+    
     public static void Listar(){
-        tabla.setModel(TListaLibros.TablaBusquedaID("", "Completa"));
+        try{
+            tabla.setModel(CLibros.TablaBusquedaID("", "Completa"));
+        }catch(SQLException ex){
+            
+        }
+        
     }
 
     /**
@@ -158,9 +167,9 @@ public class Libros extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
-            DefaultTableModel tablal = TListaLibros.TablaBusquedaID(txtdato.getText(), "Completa");
+            DefaultTableModel tablal = CLibros.TablaBusquedaID(txtdato.getText(), "Completa");
             if(tablal.getRowCount()<1){
-                tablal = TListaLibros.TablaBusquedaVarios(txtdato.getText(), "Completa");
+                tablal = CLibros.TablaBusquedaVarios(txtdato.getText(), "Completa");
             }
             tabla.setModel(tablal);
         } catch (Exception ex) {
@@ -186,7 +195,12 @@ public class Libros extends javax.swing.JPanel {
             panelFondo.repaint();
             
             String ced = tabla.getValueAt(tabla.getSelectedRow(), 1).toString();
-            IL.setDatos(TListaLibros.getLibro(ced));
+            try{
+                IL.setDatos(CLibros.getLibro(ced));
+            }catch(SQLException ex){
+                
+            }
+            
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el libro a editar!!");
         }
@@ -200,7 +214,7 @@ public class Libros extends javax.swing.JPanel {
             if(opc == JOptionPane.YES_OPTION){
                 String ced = tabla.getValueAt(tabla.getSelectedRow(), 1).toString();
                 try{
-                    TListaLibros.Eliminar(ced);
+                    CLibros.Eliminar(ced);
                 }catch(Exception ex){}}
             
                 Listar();

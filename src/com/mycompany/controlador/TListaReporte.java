@@ -36,16 +36,23 @@ public class TListaReporte {
         }
     }*/
     
-    public static Reporte Molde(ResultSet resultado) throws SQLException{
+    private Connection conexionTransaccional;
+    
+    public TListaReporte(){}
+    public TListaReporte(Connection con){
+        this.conexionTransaccional = con;
+    }
+    
+    private Reporte Molde(ResultSet resultado) throws SQLException{
         return new Reporte(resultado.getString(1), resultado.getString(2), resultado.getDate(3),
                         resultado.getDate(4), resultado.getBoolean(5), resultado.getInt(6), resultado.getString(7), resultado.getInt(8));
     }
     
-    public static void Agregar(Reporte e){
+    public void Agregar(Reporte e)throws SQLException{
         Connection con = null;
         PreparedStatement st = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("INSERT INTO reportes (CEDULA, IDLIBRO, FECHASALIDA, FECHAENTREGA, DEVUELTO, RETRASO, NOTA) VALUES (?, ?, ?, ?, ?, ?, ?);");
             st.setString(1, e.getCedula());
             st.setString(2, e.getIDLibro());
@@ -55,11 +62,11 @@ public class TListaReporte {
             st.setInt(6, e.getRetraso());
             st.setString(7, e.getNota());
             st.executeUpdate();
-        } catch (SQLException x) {
-            System.out.println(x.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
@@ -67,11 +74,11 @@ public class TListaReporte {
         }
     }
     
-    public static void Editar(Reporte e){
+    public void Editar(Reporte e)throws SQLException{
         Connection con = null;
         PreparedStatement st = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("UPDATE reportes SET CEDULA = ?,IDLIBRO = ?, FECHASALIDA = ?, FECHAENTREGA = ?, DEVUELTO = ?, RETRASO = ?, NOTA = ? WHERE ID = ?;");
             st.setString(1, e.getCedula());
             st.setString(2, e.getIDLibro());
@@ -82,11 +89,11 @@ public class TListaReporte {
             st.setString(7, e.getNota());
             st.setInt(8, e.getID());
             st.executeUpdate();
-        } catch (SQLException x) {
-            System.out.println(x.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
@@ -94,25 +101,26 @@ public class TListaReporte {
         }
     }
     
-    public static Reporte getReporte(int i){
+    public Reporte getReporte(int i)throws SQLException{
         Connection con = null;
         PreparedStatement st = null;
         ResultSet resultado = null;
         Reporte lb = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("SELECT * FROM REPORTES WHERE ID = ?;");
             st.setInt(1, i);
             resultado = st.executeQuery();
             if(resultado.next()){
                 lb = Molde(resultado);
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
+                resultado.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
             } 
@@ -120,7 +128,7 @@ public class TListaReporte {
         return lb;
     }
     
-    public static DefaultTableModel TablaPanelReporte(ArrayList<Reporte> ListaE){
+    public DefaultTableModel TablaPanelReporte(ArrayList<Reporte> ListaE){
         String[] columnas = {"No.", "Cedula usuario", "ID Libro", "Fecha Salida", "Fecha entrega", "Estado", "Retraso"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
         for (int i = 0; i < ListaE.size(); i++) {
@@ -147,23 +155,26 @@ public class TListaReporte {
         return Al;
     }*/
     
-    public static ArrayList<Reporte> NoDevueltosBusqueda(String dato){
+    public ArrayList<Reporte> NoDevueltosBusqueda(String dato)throws SQLException{
         ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
         
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM reportes WHERE DEVUELTO = 0 AND (CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%');");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM reportes WHERE DEVUELTO = 0 AND (CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%');");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 ListaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
-                
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                resultado.close();
+                st.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
             } 
@@ -172,23 +183,26 @@ public class TListaReporte {
         return ListaE;
     }
     
-    public static ArrayList<Reporte> NoDevueltos(){
+    public ArrayList<Reporte> NoDevueltos()throws SQLException{
         ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
         
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM reportes WHERE DEVUELTO = 0;");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM reportes WHERE DEVUELTO = 0;");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 ListaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
-                
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                resultado.close();
+                st.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
             } 
@@ -197,7 +211,7 @@ public class TListaReporte {
         return ListaE;
     }
     
-    public static DefaultTableModel TablaReporteCuatroColumnas(ArrayList<Reporte> ListaE){
+    public DefaultTableModel TablaReporteCuatroColumnas(ArrayList<Reporte> ListaE){
         String[] columnas = {"No.", "Cedula usuario", "ID Libro", "Fecha entrega", "Retraso"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
         
@@ -211,23 +225,26 @@ public class TListaReporte {
     }
     
     
-    public static ArrayList<Reporte> ordenamientoBurbuja(){
+    public ArrayList<Reporte> ordenamientoBurbuja()throws SQLException{
         ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
         
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM reportes ORDER BY FECHAENTREGA;");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM reportes ORDER BY FECHAENTREGA;");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 ListaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
-                
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
             } 
@@ -236,23 +253,26 @@ public class TListaReporte {
         return ListaE;
     }
     
-    public static ArrayList<Reporte> getLista(){
+    public ArrayList<Reporte> getLista()throws SQLException{
         ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
         
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM reportes;");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM reportes;");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 ListaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
-                
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
             } 
@@ -261,23 +281,26 @@ public class TListaReporte {
         return ListaE;
     }
     
-    public static ArrayList<Reporte> Busqueda(String dato){
+    public ArrayList<Reporte> Busqueda(String dato)throws SQLException{
         ArrayList<Reporte> ListaE= new ArrayList<Reporte>();
 
-        Conexion Conex = new Conexion();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
         try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("SELECT * FROM reportes WHERE CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%';");
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT * FROM reportes WHERE CEDULA LIKE '"+dato+"%' OR IDLIBRO LIKE '"+dato+"%';");
+            resultado = st.executeQuery();
             while(resultado.next()){
                 ListaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
-                
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
             } 

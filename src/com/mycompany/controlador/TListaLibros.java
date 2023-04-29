@@ -22,7 +22,17 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TListaLibros {
     
-    public static Libro Molde(ResultSet resultado)throws SQLException{
+    private Connection conexionTransaccional;
+    
+    public TListaLibros(){
+        
+    }
+    
+    public TListaLibros(Connection con){
+        this.conexionTransaccional = con;
+    }
+    
+    private Libro Molde(ResultSet resultado)throws SQLException{
         return new Libro(resultado.getString(1),
                     resultado.getString(2),
                     resultado.getDate(3),
@@ -36,18 +46,18 @@ public class TListaLibros {
                     resultado.getBoolean(11));
     }
     
-    public static void Eliminar(String id){
+    public void Eliminar(String id)throws SQLException{
         Connection con = null;
         PreparedStatement st = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("DELETE FROM libros WHERE ID='"+id+"';");
             st.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
@@ -55,11 +65,11 @@ public class TListaLibros {
         }
     }
     
-    public static void Agregar(Libro e){
+    public void Agregar(Libro e)throws SQLException{
         Connection con = null;
         PreparedStatement st = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("INSERT INTO libros VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             st.setString(1, e.getID());
             st.setString(2, e.getTitulo());
@@ -73,8 +83,6 @@ public class TListaLibros {
             st.setInt(10, e.getStock());
             st.setBoolean(11, e.getDisponible());
             st.executeUpdate();
-        } catch (SQLException x) {
-            System.out.println(x.getMessage());
         } finally {
             try{
                 Conexion.closeConexion();
@@ -85,11 +93,11 @@ public class TListaLibros {
         }
     }
     
-    public static void Editar(Libro e, String id){
+    public void Editar(Libro e, String id)throws SQLException{
         Connection con = null;
         PreparedStatement st = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("UPDATE libros SET ID = ?, TITULO = ?, FECHA = ?, AUTOR = ?, CATEGORIA = ?, EDICION = ?, IDIOMA = ?, PAGINAS = ?,DESCRIPCION = ?, STOCK = ?, DISPONIBLE = ? WHERE ID = ? ;");
             st.setString(1, e.getID());
             st.setString(2, e.getTitulo());
@@ -104,11 +112,11 @@ public class TListaLibros {
             st.setBoolean(11, e.getDisponible());
             st.setString(12, id);
             st.executeUpdate();
-        } catch (SQLException x) {
-            System.out.println(x.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
             }catch(SQLException ex){
                 System.out.println(ex.getMessage());
@@ -116,24 +124,23 @@ public class TListaLibros {
         }
     }
     
-    public static Libro getLibro(String id){        
+    public Libro getLibro(String id)throws SQLException{        
         Connection con = null;
         PreparedStatement st = null;
         ResultSet resultado = null;
         Libro lb = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("SELECT * FROM libros WHERE ID='"+id+"';");
             resultado = st.executeQuery();
             if(resultado.next()){
                 lb = Molde(resultado);
             }
-            
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
                 resultado.close();
             }catch(SQLException ex){
@@ -143,7 +150,7 @@ public class TListaLibros {
         return lb;
     }
     
-    public static DefaultTableModel TablaPanelLibros(ArrayList<Libro> ListaE){
+    public DefaultTableModel TablaPanelLibros(ArrayList<Libro> ListaE){
         String[] columnas = {"No.", "ID", "Titulo", "Fecha publicacion", "Autor", "Categoria"
                 , "Edicion", "Idioma", "Paginas", "Descripcion", "Stock", "Disponibilidad"};        
         DefaultTableModel tabla = new DefaultTableModel(columnas, 0);
@@ -158,14 +165,14 @@ public class TListaLibros {
         return tabla;
     }
     
-    private static String Disponibilidad(boolean ok){
+    private String Disponibilidad(boolean ok){
         if(ok){
             return "Disponible";
         }
         return "No diponible";
     }
     
-    public static DefaultTableModel TablaCuatroColumnas(ArrayList<Libro> ListaE){
+    public DefaultTableModel TablaCuatroColumnas(ArrayList<Libro> ListaE){
         String[] columnas = {"No.", "ID", "Titulo", "Paginas", "Disponibilidad"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
          
@@ -177,23 +184,23 @@ public class TListaLibros {
         return tabla;
     }
     
-    public static DefaultTableModel TablaBusquedaID(String ced, String clave){
+    public DefaultTableModel TablaBusquedaID(String ced, String clave)throws SQLException{
         ArrayList<Libro> listaE = new ArrayList<>();
         Connection con = null;
         PreparedStatement st = null;
         ResultSet resultado = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("SELECT * FROM libros WHERE ID LIKE '"+ced+"%';");
             resultado = st.executeQuery();
             while(resultado.next()){
                 listaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
                 resultado.close();
             }catch(SQLException ex){
@@ -207,13 +214,13 @@ public class TListaLibros {
         return TablaCuatroColumnas(listaE);
     }
     
-    public static DefaultTableModel TablaBusquedaVarios(String ced, String clave){
+    public DefaultTableModel TablaBusquedaVarios(String ced, String clave)throws SQLException{
         ArrayList<Libro> listaE = new ArrayList<>();
         Connection con = null;
         PreparedStatement st = null;
         ResultSet resultado = null;
         try {
-            con = Conexion.obtenerConexion();
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("SELECT * FROM libros WHERE TITULO LIKE %?% OR FECHA LIKE '%?%' OR CATEGORIA LIKE ?% OR EDICION LIKE ?% OR AUTOR LIKE %?% OR IDIOMA LIKE ?%;");
             st.setString(1, ced);
             st.setString(2, ced);
@@ -225,11 +232,11 @@ public class TListaLibros {
             while(resultado.next()){
                 listaE.add(Molde(resultado));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             try{
-                Conexion.closeConexion();
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
                 st.close();
                 resultado.close();
             }catch(SQLException ex){

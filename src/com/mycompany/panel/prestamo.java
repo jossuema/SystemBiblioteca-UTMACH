@@ -5,12 +5,13 @@
  */
 package com.mycompany.panel;
 
-import com.mycompany.controlador.TListaLibros;
-import com.mycompany.controlador.TListaReporte;
 import com.mycompany.controlador.TListaUsuario;
+import static com.mycompany.panel.panelReporte.CReporte;
+import static com.mycompany.panel.panelUsuarios.CUsuarios;
+import static com.mycompany.panel.Libros.CLibros;
 import com.mycompany.controlador.Validaciones;
-import com.mycompany.entidades.Libro;
 import com.mycompany.entidades.Reporte;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -25,8 +26,18 @@ public class prestamo extends javax.swing.JPanel {
      */
     public prestamo() {
         initComponents();
-        tablaUsuario.setModel(TListaUsuario.TablaBusquedaVarios("", ""));
-        tablaLibro.setModel(TListaLibros.TablaBusquedaID("", ""));
+        try{
+            tablaUsuario.setModel(CUsuarios.TablaBusquedaVarios("", ""));
+        }catch(SQLException ex){
+            
+        }
+        
+        try{
+            tablaLibro.setModel(Libros.CLibros.TablaBusquedaID("", ""));
+        }catch(SQLException ex){
+            
+        }
+        
     }
 
     /**
@@ -275,9 +286,9 @@ public class prestamo extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
-            DefaultTableModel tabla = TListaLibros.TablaBusquedaID(txtDatoLibro.getText(), "");
+            DefaultTableModel tabla = Libros.CLibros.TablaBusquedaID(txtDatoLibro.getText(), "");
             if(tabla.getRowCount()<1){
-                tabla = TListaLibros.TablaBusquedaVarios(txtDatoLibro.getText(), "");
+                tabla = Libros.CLibros.TablaBusquedaVarios(txtDatoLibro.getText(), "");
             }
             tablaLibro.setModel(tabla);
         } catch (Exception ex) {
@@ -287,9 +298,9 @@ public class prestamo extends javax.swing.JPanel {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         try {
-            DefaultTableModel tabla = TListaUsuario.TablaBusquedaCed(txtDatoUsuario.getText(), "");
+            DefaultTableModel tabla = CUsuarios.TablaBusquedaCed(txtDatoUsuario.getText(), "");
             if(tabla.getRowCount()<1){
-                tabla = TListaUsuario.TablaBusquedaVarios(txtDatoUsuario.getText(), "");
+                tabla = CUsuarios.TablaBusquedaVarios(txtDatoUsuario.getText(), "");
             }
             tablaUsuario.setModel(tabla);
         } catch (Exception ex) {
@@ -301,8 +312,13 @@ public class prestamo extends javax.swing.JPanel {
         
         Reporte re = leer();
         if(re!=null){
-            TListaReporte.Agregar(re);
-            String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
+            try{
+                CReporte.Agregar(re);
+            }catch(SQLException ex){
+                
+            }
+                
+            
             
         }
         
@@ -322,13 +338,21 @@ public class prestamo extends javax.swing.JPanel {
 
     private void txtDatoUsuarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoUsuarioKeyReleased
         if(txtDatoUsuario.equals("")){
-            tablaUsuario.setModel(TListaUsuario.TablaBusquedaVarios("", ""));
+            try{
+                tablaUsuario.setModel(CUsuarios.TablaBusquedaVarios("", ""));
+            }catch(SQLException ex){
+
+            }
         }
     }//GEN-LAST:event_txtDatoUsuarioKeyReleased
 
     private void txtDatoLibroKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoLibroKeyReleased
         if(txtDatoLibro.equals("")){
-            tablaLibro.setModel(TListaLibros.TablaBusquedaID("", ""));
+            try{
+                tablaLibro.setModel(Libros.CLibros.TablaBusquedaID("", ""));
+            }catch(SQLException ex){
+
+            }
         }
     }//GEN-LAST:event_txtDatoLibroKeyReleased
     
@@ -363,10 +387,14 @@ public class prestamo extends javax.swing.JPanel {
             ok = false;
         }
         
-        String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
-        if(TListaLibros.getLibro(ced).getStock()<1){
-            msj = "No existen mas libros en stock!!";
-            ok = false;
+        try{
+            String ced = tablaLibro.getValueAt(tablaLibro.getSelectedRow(), 1).toString();
+            if(CLibros.getLibro(ced).getStock()<1){
+                msj = "No existen mas libros en stock!!";
+                ok = false;
+            }
+        }catch(SQLException ex){
+            
         }
         
         if(ok){

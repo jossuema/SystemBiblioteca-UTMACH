@@ -8,6 +8,7 @@ package com.mycompany.panel;
 import com.mycompany.controlador.TListaUsuario;
 import java.awt.CardLayout;
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -20,14 +21,22 @@ public class panelUsuarios extends javax.swing.JPanel {
     /**
      * Creates new form Usuarios
      */
+    
+    static TListaUsuario CUsuarios;
+    
     public panelUsuarios() {
         initComponents();
+        this.CUsuarios = new TListaUsuario();
         panelFondo.add(new IngresoUsuarios("Ingresar"), "Usuarios");
         Listar();
     }
     
     public static void Listar(){
-        jTable1.setModel(TListaUsuario.TablaBusquedaCed("", "Completa"));
+        try{
+           jTable1.setModel(CUsuarios.TablaBusquedaCed("", "Completa")); 
+        }catch(SQLException ex){
+            
+        }
     }
 
     /**
@@ -174,9 +183,9 @@ public class panelUsuarios extends javax.swing.JPanel {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         
         try {
-            DefaultTableModel tabla = TListaUsuario.TablaBusquedaCed(txtDato.getText(), "Completa");
+            DefaultTableModel tabla = CUsuarios.TablaBusquedaCed(txtDato.getText(), "Completa");
             if(tabla.getRowCount()<1){
-                tabla = TListaUsuario.TablaBusquedaVarios(txtDato.getText(), "Completa");
+                tabla = CUsuarios.TablaBusquedaVarios(txtDato.getText(), "Completa");
             }
             jTable1.setModel(tabla);
         } catch (Exception ex) {
@@ -202,7 +211,12 @@ public class panelUsuarios extends javax.swing.JPanel {
                     JOptionPane.YES_NO_OPTION);
             if(opc == JOptionPane.YES_OPTION){
                 String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-                TListaUsuario.Eliminar(ced);
+                try{
+                    CUsuarios.Eliminar(ced);  
+                }catch(SQLException ex){
+                    
+                }
+                
                 Listar();
             }
         }else{
@@ -222,7 +236,12 @@ public class panelUsuarios extends javax.swing.JPanel {
             panelFondo.repaint();
             
             String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-            IL.setDatos(TListaUsuario.getUsuario(ced));
+            try{
+                IL.setDatos(CUsuarios.getUsuario(ced));
+            }catch(SQLException ex){
+                    
+            }
+            
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el usuario a editar!!");
         }

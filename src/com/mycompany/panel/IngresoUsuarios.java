@@ -5,9 +5,10 @@
  */
 package com.mycompany.panel;
 
-import com.mycompany.controlador.TListaUsuario;
 import com.mycompany.controlador.Validaciones;
 import com.mycompany.entidades.Usuario;
+import static com.mycompany.panel.panelUsuarios.CUsuarios;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,6 +23,7 @@ public class IngresoUsuarios extends javax.swing.JPanel {
     
     String funcion;
     String CedG;
+   
     
     public IngresoUsuarios(String fun) {
         initComponents();
@@ -273,9 +275,17 @@ public class IngresoUsuarios extends javax.swing.JPanel {
             Usuario e = new Usuario(ced, nombre, apellidop, apellidom, domicilio, telefono, carrera, facultad);
             
             if(funcion.equals("Ingresar")){
-                TListaUsuario.Agregar(e);
+                try{
+                    CUsuarios.Agregar(e); 
+                }catch(SQLException ex){
+                    
+                }
             }else{
-                TListaUsuario.Editar(e, CedG);
+                try{
+                    CUsuarios.Editar(e, CedG);  
+                }catch(SQLException ex){
+                    
+                }
                 this.hide();
             }
             panelUsuarios.Listar();
@@ -328,7 +338,14 @@ public class IngresoUsuarios extends javax.swing.JPanel {
             ok = false;
         }
         
-        if(TListaUsuario.getUsuario(txtCedula.getText())!=null){
+        Usuario lb = null;
+        try{
+            lb = CUsuarios.getUsuario(txtCedula.getText());
+        }catch(SQLException ex){
+                    
+        }
+        
+        if(lb!=null){
             if(funcion.equals("Ingresar")){
                 JOptionPane.showMessageDialog(null, "Ya existe un usuario con la cedula: "+txtCedula.getText());
                 ok = false;

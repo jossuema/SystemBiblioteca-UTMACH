@@ -7,6 +7,7 @@ package com.mycompany.panel;
 
 import com.mycompany.controlador.TListaReporte;
 import com.mycompany.entidades.Reporte;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
@@ -18,10 +19,21 @@ public class Devolucion extends javax.swing.JPanel {
     /**
      * Creates new form Devolucion
      */
+    
+    
+    
     public Devolucion() {
         initComponents();
-        jTable1.setModel(TListaReporte.TablaReporteCuatroColumnas(TListaReporte.NoDevueltos()));
+        this.CReporte = new TListaReporte();
+        try{
+            jTable1.setModel(CReporte.TablaReporteCuatroColumnas(CReporte.NoDevueltos()));
+        }catch(SQLException ex){
+            
+        }
+        
     }
+    
+    static TListaReporte CReporte;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -101,10 +113,9 @@ public class Devolucion extends javax.swing.JPanel {
                 .addGap(41, 41, 41)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 891, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 746, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(title1, javax.swing.GroupLayout.PREFERRED_SIZE, 715, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 891, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 746, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(title1, javax.swing.GroupLayout.PREFERRED_SIZE, 715, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(587, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -135,23 +146,32 @@ public class Devolucion extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         if(!txtDato.getText().equals("")){
-            jTable1.setModel(TListaReporte.TablaReporteCuatroColumnas(TListaReporte.NoDevueltosBusqueda(txtDato.getText())));
+            try{
+                jTable1.setModel(CReporte.TablaReporteCuatroColumnas(CReporte.NoDevueltosBusqueda(txtDato.getText())));
+            }catch(SQLException ex){
+
+            }
+            
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(jTable1.getSelectedRow()>=0){
             int id = Integer.valueOf(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
-            Reporte re = TListaReporte.getReporte(id);
-            re.Devolver();
-            TListaReporte.Editar(re);
-                     
-            if(re.getRetraso()<1){
-                JOptionPane.showMessageDialog(null, "Libro devuelto correctamente y a tiempo.");
-            }else{
-                JOptionPane.showMessageDialog(null, "Libro devuelto con "+re.getRetraso()+" dias de retraso.");
+            Reporte re = null;
+            try{
+                re = CReporte.getReporte(id);
+                re.Devolver();
+                CReporte.Editar(re);
+                if(re.getRetraso()<1){
+                    JOptionPane.showMessageDialog(null, "Libro devuelto correctamente y a tiempo.");
+                }else{
+                    JOptionPane.showMessageDialog(null, "Libro devuelto con "+re.getRetraso()+" dias de retraso.");
+                }
+                jTable1.setModel(CReporte.TablaReporteCuatroColumnas(CReporte.NoDevueltos()));
+            }catch(SQLException ex){
+
             }
-            jTable1.setModel(TListaReporte.TablaReporteCuatroColumnas(TListaReporte.NoDevueltos()));
         }else{
             JOptionPane.showMessageDialog(null, "Escoja el libro a devolver!!");
         }

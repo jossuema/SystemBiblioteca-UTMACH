@@ -6,6 +6,7 @@
 package com.mycompany.panel;
 
 import com.mycompany.controlador.TListaReporte;
+import java.sql.SQLException;
 
 /**
  *
@@ -16,9 +17,18 @@ public class panelReporte extends javax.swing.JPanel {
     /**
      * Creates new form Reporte
      */
+    
+    static TListaReporte CReporte;
+    
     public panelReporte() {
         initComponents();
-        jTable1.setModel(TListaReporte.TablaPanelReporte(TListaReporte.getLista()));
+        this.CReporte = new TListaReporte();
+        try{
+            jTable1.setModel(CReporte.TablaPanelReporte(CReporte.getLista()));
+        }catch(SQLException ex){
+            
+        }
+        
     }
 
     /**
@@ -156,18 +166,32 @@ public class panelReporte extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         if(!txtdato.getText().equals("")){
-            jTable1.setModel(TListaReporte.TablaPanelReporte(TListaReporte.Busqueda(txtdato.getText())));
+            try{
+                jTable1.setModel(CReporte.TablaPanelReporte(CReporte.Busqueda(txtdato.getText())));
+            }catch(SQLException ex){
+
+            }
+            
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void txtdatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdatoKeyReleased
         if(txtdato.getText().equals("")){
-            jTable1.setModel(TListaReporte.TablaPanelReporte(TListaReporte.getLista()));
+            try{
+                jTable1.setModel(CReporte.TablaPanelReporte(CReporte.getLista()));
+            }catch(SQLException ex){
+
+            }
+            
         }
     }//GEN-LAST:event_txtdatoKeyReleased
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        jTable1.setModel(TListaReporte.TablaPanelReporte(TListaReporte.ordenamientoBurbuja()));
+        try{
+            jTable1.setModel(CReporte.TablaPanelReporte(CReporte.ordenamientoBurbuja()));
+        }catch(SQLException ex){
+
+        }
     }//GEN-LAST:event_jButton5ActionPerformed
 
 

@@ -5,13 +5,14 @@
  */
 package com.mycompany.panel;
 
-import com.mycompany.controlador.TListaUsuario;
-import com.mycompany.controlador.TlistaRegistro;
 import com.mycompany.controlador.Validaciones;
 import com.mycompany.entidades.Registro;
 import com.mycompany.entidades.Usuario;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import static com.mycompany.panel.panelUsuarios.CUsuarios;
+import static com.mycompany.panel.panelRegistro.CRegistro;
 
 /**
  *
@@ -24,7 +25,16 @@ public class IngresoRegistro extends javax.swing.JPanel {
      */
     public IngresoRegistro() {
         initComponents();
-        jTable1.setModel(TListaUsuario.TablaBusquedaCed("", ""));
+        
+        loadUsers();
+    }
+    
+    public void loadUsers(){
+        try{
+            jTable1.setModel(CUsuarios.TablaBusquedaCed("", ""));
+        }catch(SQLException ex){
+            
+        }
     }
 
     /**
@@ -174,12 +184,12 @@ public class IngresoRegistro extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
-            DefaultTableModel tabla = TListaUsuario.TablaBusquedaCed(txtDato.getText(), "");
+            DefaultTableModel tabla = CUsuarios.TablaBusquedaCed(txtDato.getText(), "");
             if(tabla.getRowCount()<1){
-                tabla = TListaUsuario.TablaBusquedaVarios(txtDato.getText(), "");
+                tabla = CUsuarios.TablaBusquedaVarios(txtDato.getText(), "");
             }
             jTable1.setModel(tabla);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -187,7 +197,12 @@ public class IngresoRegistro extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Registro le = leer();
         if(le!=null){
-            TlistaRegistro.Agregar(le);
+            try{
+               CRegistro.Agregar(le); 
+            }catch(SQLException ex){
+                
+            }
+            
             System.out.println("Guardado");
             this.hide();
 
@@ -203,7 +218,12 @@ public class IngresoRegistro extends javax.swing.JPanel {
 
     private void txtDatoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoKeyReleased
         if(txtDato.equals("")){
-            jTable1.setModel(TListaUsuario.TablaBusquedaCed("", ""));
+            try{
+                jTable1.setModel(CUsuarios.TablaBusquedaCed("", ""));
+            }catch(SQLException ex){
+                
+            }
+            
         }
     }//GEN-LAST:event_txtDatoKeyReleased
     
@@ -211,8 +231,12 @@ public class IngresoRegistro extends javax.swing.JPanel {
         Registro rr = null;
         if(Validacion()){
             String ced = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
-            Usuario us = TListaUsuario.getUsuario(ced);
-            rr = new Registro(us, jDateChooser1.getDate(), jRadioButton1.isSelected());
+            try{
+                Usuario us = CUsuarios.getUsuario(ced);
+                rr = new Registro(us, jDateChooser1.getDate(), jRadioButton1.isSelected());
+            }catch(SQLException ex){
+                
+            }
         }
         return rr;
     }
