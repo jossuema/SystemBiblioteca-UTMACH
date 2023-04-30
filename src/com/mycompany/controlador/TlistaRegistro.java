@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
@@ -111,12 +110,11 @@ public class TlistaRegistro{
                 , "Fecha", "Libro prestado"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
         
-        for (int i = 0; i < ListaE.size(); i++) {
-            Registro e = ListaE.get(i);
+        ListaE.forEach((e)->{
             Object[] row = {String.valueOf(e.getID()), e.getPersona().getCedula(), e.getPersona().getNombre(), e.getPersona().getApellidoP(), 
                 e.getPersona().getFacultad(), e.getPersona().getCarrera(), cFecha.ImprimirFecha(e.getFecha()), LibroPrestado(e.getLibroPrestado())};
             tabla.addRow(row);
-        }
+        });
         
         return tabla;
     }
@@ -165,11 +163,15 @@ public class TlistaRegistro{
         try {
             con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
             st = con.prepareStatement("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA "
-                    + "WHERE CEDULA LIKE '"+clave+"%' OR NOMBRE LIKE '"+clave+"%' OR APELLIDOP LIKE '"+clave+"%' OR APELLIDOM LIKE '"+clave+"%' OR CARRERA LIKE '"+clave+"%' OR FACULTAD LIKE '"+clave+"%';");
+                    + "WHERE A.CEDULA LIKE '"+clave+"%' OR NOMBRE LIKE '"+clave+"%' OR APELLIDOP LIKE '"+clave+"%' OR APELLIDOM LIKE '"+clave+"%' OR CARRERA LIKE '"+clave+"%' OR FACULTAD LIKE '"+clave+"%';");
             resultado = st.executeQuery();
             while(resultado.next()) {                
-                ListaE.add(getRegistro(resultado.getString(1)));
+                ListaE.add(Molde(resultado));
             }
+        }catch(SQLException ex){
+            System.out.println("error sql");
+            System.out.println(ex.getMessage());
+            
         } finally {
             try{
                 if(this.conexionTransaccional == null){
@@ -185,20 +187,31 @@ public class TlistaRegistro{
     }
     
     public ArrayList<Registro> TablaBusquedaAmbos(Date fecha, String clave)throws SQLException{
-        ArrayList<Registro> ListaFechas =  TablaBusquedaFecha(fecha);
-        ArrayList<Registro> ListaVarios = TablaBusquedaVarios(clave);
         ArrayList<Registro> ListaE =  new ArrayList<>();
         
-        for (int i = 0; i < ListaVarios.size(); i++) {
-            Registro v = ListaVarios.get(i);
-            for (int j = 0; j < ListaFechas.size(); j++) {
-                Registro f = ListaFechas.get(j);
-                if(v.equals(f)){
-                    ListaE.add(f);
-                }
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet resultado = null;
+        try {
+            con = this.conexionTransaccional != null ? this.conexionTransaccional : Conexion.obtenerConexion();
+            st = con.prepareStatement("SELECT B.*, A.FECHA, A.LIBRO_PRESTADO, A.ID FROM registros A INNER JOIN usuarios B ON A.CEDULA = B.CEDULA "
+                    + "WHERE (A.CEDULA LIKE '"+clave+"%' OR NOMBRE LIKE '"+clave+"%' OR APELLIDOP LIKE '"+clave+"%' OR APELLIDOM LIKE '"+clave+"%' OR CARRERA LIKE '"+clave+"%' OR FACULTAD LIKE '"+clave+"%') AND FECHA LIKE '"+cFecha.FechaSQL(fecha)+"';");
+            resultado = st.executeQuery();
+            while(resultado.next()) {                
+                ListaE.add(Molde(resultado));
             }
-            
+        } finally {
+            try{
+                if(this.conexionTransaccional == null){
+                    Conexion.closeConexion();
+                }
+                st.close();
+                resultado.close();
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            } 
         }
+       
         return ListaE;
     }
     

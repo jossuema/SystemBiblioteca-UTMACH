@@ -29,6 +29,11 @@ public class cFecha {
         return dt;
     }
     
+    /*
+        lb[2] = Year
+        lb[1] = Month
+        lb[0] = Date
+    */
     public static Date crearFecha(String date){
         String[] lb = date.split("-");
         return new Date(Integer.parseInt(lb[2])-1900, Integer.parseInt(lb[1])-1, Integer.parseInt(lb[0]));

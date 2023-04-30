@@ -20,23 +20,20 @@ public class Conexion {
     private static final String user = "root";
     private static final String psw = "Root800#";
     private static final String url = "jdbc:mysql://localhost:3306/dblibreria";
-    private static BasicDataSource dataSource = null;
     
     public Conexion(){}
     
-    public static DataSource getDataSource() {
-        if (dataSource == null) {
-            dataSource = new BasicDataSource();
-            dataSource.setUrl(url);
-            dataSource.setUsername(user);
-            dataSource.setPassword(psw);
-            dataSource.setInitialSize(10);
+    public static Connection obtenerConexion()throws SQLException{
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conexion = DriverManager.getConnection(url, user, psw);
+            System.out.println("Conexion exitosa");
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("Error, no se ha podido cargar MySQL JDBC Driver");
+            System.out.println(ex.getMessage());
+            throw new RuntimeException(ex);
         }
-        return dataSource;
-    }
-    
-    public static Connection obtenerConexion()throws SQLException{ 
-        return getDataSource().getConnection();
+        return conexion;
     }
     
     public static void closeConexion() throws SQLException{
