@@ -25,8 +25,7 @@ public class cFecha {
     
     public static Date FechaActual(){
         LocalDate ld = LocalDate.now();
-        Date dt = new Date(ld.getYear()-1900, ld.getMonthValue()-1, ld.getDayOfMonth());
-        return dt;
+        return new Date(ld.getYear()-1900, ld.getMonthValue()-1, ld.getDayOfMonth());
     }
     
     /*

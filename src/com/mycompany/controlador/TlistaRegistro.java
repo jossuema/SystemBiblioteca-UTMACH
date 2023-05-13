@@ -243,49 +243,6 @@ public class TlistaRegistro{
         return ListaE;
     }
     
-    
-    /*public static void leer() throws IOException {
-        Conexion Conex = new Conexion();
-        try {           
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            ResultSet resultado = st.executeQuery("Select * from registros");
-            while(resultado.next()){
-                int pos = TListaUsuario.Buscar(resultado.getString(1));
-                if(pos!=-1){
-                    Registro lb = new Registro(TListaUsuario.getUsuario(pos), cFecha.crearFecha(resultado.getString(2)), Boolean.valueOf(resultado.getString(3)));
-                    lista.add(lb);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            Conex.closeConexion();
-        }
-    }
-
-    public static void guardar() throws IOException {
-        Conexion Conex = new Conexion();
-        try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM registros");
-            for (int i = 0; i < lista.size(); i++) {
-                Registro e = lista.get(i);
-                String comando = "INSERT INTO registros VALUES ('"
-                    +e.getPersona().getCedula()+"','"
-                            +cFecha.ImprimirFecha(e.getFecha())+"','"
-                                    +e.getLibroPrestado()+"')";
-                System.out.println(comando);
-                st.executeUpdate(comando);
-            }   
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            Conex.closeConexion();
-        }
-    }*/
-    
     public ArrayList<Registro> ordenamientoBurbuja()throws SQLException{
         ArrayList<Registro> ListaE = new ArrayList<>();
         
