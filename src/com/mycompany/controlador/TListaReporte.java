@@ -7,14 +7,11 @@ package com.mycompany.controlador;
 
 import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Reporte;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,23 +19,13 @@ import javax.swing.table.DefaultTableModel;
  * @author negri
  */
 public class TListaReporte {
-    
-    /*public static void Eliminar(String da){
-        Conexion Conex = new Conexion();
-        try {
-            Connection con = Conex.obtenerConexion();
-            Statement st = con.createStatement();
-            st.executeUpdate("DELETE FROM reportes WHERE id='"+id+"';");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            Conex.closeConexion();
-        }
-    }*/
-    
     private Connection conexionTransaccional;
     
-    public TListaReporte(){}
+    public TListaReporte(){
+        try{
+            this.conexionTransaccional = Conexion.obtenerConexion();
+        }catch(SQLException ex){}
+    }
     public TListaReporte(Connection con){
         this.conexionTransaccional = con;
     }
@@ -131,32 +118,18 @@ public class TListaReporte {
     public DefaultTableModel TablaPanelReporte(ArrayList<Reporte> ListaE){
         String[] columnas = {"No.", "Cedula usuario", "ID Libro", "Fecha Salida", "Fecha entrega", "Estado", "Retraso"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
-        for (int i = 0; i < ListaE.size(); i++) {
-            Reporte e = ListaE.get(i);
+        
+        ListaE.forEach((e) -> {
             Object[] row = {e.getID(), e.getCedula(), String.valueOf(e.getIDLibro()), cFecha.ImprimirFecha(e.getFechaSalida()), cFecha.ImprimirFecha(e.getFechaEntrega()), 
                 e.Estado(), e.DiasRetraso()};
             tabla.addRow(row);
-        }
-        
+        });
+  
         return tabla;
     }
     
-    /*public static ArrayList<Reporte> BusquedaCed(String dato){
-        ArrayList<Reporte> Al = new ArrayList<Reporte>();
-        
-        for (int i = 0; i < lista.size(); i++) {
-            Reporte e = lista.get(i);
-            if(e.getCedula().toLowerCase().startsWith(dato)
-                    ||String.valueOf(e.getIDLibro()).toLowerCase().startsWith(dato)){
-                Al.add(e);
-            }
-            
-        }
-        return Al;
-    }*/
-    
     public ArrayList<Reporte> NoDevueltosBusqueda(String dato)throws SQLException{
-        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE = new ArrayList<>();
         
         Connection con = null;
         PreparedStatement st = null;
@@ -184,7 +157,7 @@ public class TListaReporte {
     }
     
     public ArrayList<Reporte> NoDevueltos()throws SQLException{
-        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE = new ArrayList<>();
         
         Connection con = null;
         PreparedStatement st = null;
@@ -215,18 +188,17 @@ public class TListaReporte {
         String[] columnas = {"No.", "Cedula usuario", "ID Libro", "Fecha entrega", "Retraso"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
         
-        for (int i = 0; i < ListaE.size(); i++) {
-            Reporte e = ListaE.get(i);
+        ListaE.forEach((e) -> {
             Object[] row = {e.getID(), e.getCedula(), String.valueOf(e.getIDLibro()), cFecha.ImprimirFecha(e.getFechaEntrega()), e.DiasRetraso()};
             tabla.addRow(row);
-        }
+        });
         
         return tabla;
     }
     
     
     public ArrayList<Reporte> ordenamientoBurbuja()throws SQLException{
-        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE = new ArrayList<>();
         
         Connection con = null;
         PreparedStatement st = null;
@@ -254,7 +226,7 @@ public class TListaReporte {
     }
     
     public ArrayList<Reporte> getLista()throws SQLException{
-        ArrayList<Reporte> ListaE = new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE = new ArrayList<>();
         
         Connection con = null;
         PreparedStatement st = null;
@@ -282,7 +254,7 @@ public class TListaReporte {
     }
     
     public ArrayList<Reporte> Busqueda(String dato)throws SQLException{
-        ArrayList<Reporte> ListaE= new ArrayList<Reporte>();
+        ArrayList<Reporte> ListaE= new ArrayList<>();
 
         Connection con = null;
         PreparedStatement st = null;

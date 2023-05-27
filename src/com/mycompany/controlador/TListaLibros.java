@@ -7,12 +7,10 @@ package com.mycompany.controlador;
 
 import com.mycompany.conexion.Conexion;
 import com.mycompany.entidades.Libro;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -25,7 +23,9 @@ public class TListaLibros {
     private Connection conexionTransaccional;
     
     public TListaLibros(){
-        
+        try{
+            this.conexionTransaccional = Conexion.obtenerConexion();
+        }catch(SQLException ex){}
     }
     
     public TListaLibros(Connection con){
@@ -154,14 +154,12 @@ public class TListaLibros {
         String[] columnas = {"No.", "ID", "Titulo", "Fecha publicacion", "Autor", "Categoria"
                 , "Edicion", "Idioma", "Paginas", "Descripcion", "Stock", "Disponibilidad"};        
         DefaultTableModel tabla = new DefaultTableModel(columnas, 0);
-            
-        for (int i = 0; i < ListaE.size(); i++) {
-            Libro e = ListaE.get(i);
-            Object[] row = {(i+1), String.valueOf(e.getID()), e.getTitulo(), cFecha.ImprimirFecha(e.getFecha()), e.getAutor(), 
-                e.getCategoria(), e.getEdicion(), e.getIdioma(), e.getPaginas(), e.getDescripcion(), e.getStock(), Disponibilidad(e.getDisponible())};
-            tabla.addRow(row);
-        }
         
+        ListaE.forEach((e)->{
+            Object[] row = {(ListaE.indexOf(e)+1), String.valueOf(e.getID()), e.getTitulo(), cFecha.ImprimirFecha(e.getFecha()), e.getAutor(), 
+                    e.getCategoria(), e.getEdicion(), e.getIdioma(), e.getPaginas(), e.getDescripcion(), e.getStock(), Disponibilidad(e.getDisponible())};
+                tabla.addRow(row);
+        });
         return tabla;
     }
     
@@ -175,12 +173,11 @@ public class TListaLibros {
     public DefaultTableModel TablaCuatroColumnas(ArrayList<Libro> ListaE){
         String[] columnas = {"No.", "ID", "Titulo", "Paginas", "Disponibilidad"};        
         DefaultTableModel tabla = new DefaultTableModel(null, columnas);
-         
-        for (int i = 0; i < ListaE.size(); i++) {
-            Libro e = ListaE.get(i);
-            Object[] row = {(i+1), String.valueOf(e.getID()), e.getTitulo(), e.getPaginas(), Disponibilidad(e.getDisponible())};
+        
+        ListaE.forEach((e)->{
+            Object[] row = {(ListaE.indexOf(e)+1), String.valueOf(e.getID()), e.getTitulo(), e.getPaginas(), Disponibilidad(e.getDisponible())};
             tabla.addRow(row);
-        }
+        });
         return tabla;
     }
     

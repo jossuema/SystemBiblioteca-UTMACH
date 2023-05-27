@@ -25,10 +25,14 @@ public class cFecha {
     
     public static Date FechaActual(){
         LocalDate ld = LocalDate.now();
-        Date dt = new Date(ld.getYear()-1900, ld.getMonthValue()-1, ld.getDayOfMonth());
-        return dt;
+        return new Date(ld.getYear()-1900, ld.getMonthValue()-1, ld.getDayOfMonth());
     }
     
+    /*
+        lb[2] = Year
+        lb[1] = Month
+        lb[0] = Date
+    */
     public static Date crearFecha(String date){
         String[] lb = date.split("-");
         return new Date(Integer.parseInt(lb[2])-1900, Integer.parseInt(lb[1])-1, Integer.parseInt(lb[0]));
