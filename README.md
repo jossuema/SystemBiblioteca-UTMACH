@@ -1,10 +1,10 @@
 # Sistema biblioteca UTMACH
 
-Programa para manejar los requerimientos y las necesidades de los administradores de la biblioteca de la fcultad de Ingenieria Civil en la Universidad tecnica de Machala
+Programa para manejar los requerimientos y las necesidades de los administradores de la biblioteca de la facultad de Ingenieria Civil en la Universidad tecnica de Machala
 
 Construido bajo el diseño MODELO-VISTA-CONTROLADOR (MVC)
 
-4 Etidades (Clases)
+4 Entidades (Clases)
 - Usuario
 - Libro
 - Registro
